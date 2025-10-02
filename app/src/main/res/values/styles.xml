@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomCalendarTheme" parent="Theme.AppCompat.Light">
+        <item name="android:colorAccent">@color/blue</item>
+        <item name="android:dateTextAppearance">@style/CustomCalendarDateText</item>
+        <item name="android:weekDayTextAppearance">@style/CustomCalendarWeekDayText</item>
+    </style>
+
+    <style name="CustomCalendarDateText" parent="android:TextAppearance.Material.Body1">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="CustomCalendarWeekDayText" parent="android:TextAppearance.Material.Caption">
+        <item name="android:textColor">@color/dark_blue</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>

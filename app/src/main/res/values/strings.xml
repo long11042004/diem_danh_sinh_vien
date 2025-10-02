@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Màn hình đăng nhập -->
+    <string name="app_name">Ứng dụng điểm danh sinh viên</string>
+    <string name="app_logo_description">Logo của ứng dụng</string>
+    <string name="login_screen_title">Đăng nhập</string>
+    <string name="username_or_student_id">Tên đăng nhập</string>
+    <string name="password">Mật khẩu</string>
+    <string name="remember_me">Ghi nhớ đăng nhập</string>
+    <string name="forgot_password">Quên mật khẩu?</string>
+    <string name="login_button">Đăng nhập</string>
+    <string name="no_account_yet">Chưa có tài khoản?</string>
+    <string name="register_now">Đăng ký ngay</string>
+    <string name="login_error_message">Tên đăng nhập hoặc mật khẩu không đúng.</string>
+    <string name="or_sign_in_with">Hoặc đăng nhập với</string>
+    <string name="sign_in_with_microsoft">Office 365</string>
+
+    <!-- Màn hình đăng ký -->
+    <string name="register_screen_title">Đăng ký tài khoản</string>
+    <string name="full_name">Họ và tên</string>
+    <string name="school">Trường học</string>
+    <string name="phone_number">Số điện thoại</string>
+    <string name="date_of_birth">Ngày sinh</string>
+    <string name="email">Email</string>
+    <string name="confirm_password">Xác nhận mật khẩu</string>
+    <string name="register_button">Đăng ký</string>
+    <string name="error_enter_full_name">Họ và tên không được để trống</string>
+    <string name="error_enter_school">Trường học không được để trống</string>
+    <string name="error_enter_phone">Số điện thoại không được để trống</string>
+    <string name="error_enter_email">Email không được để trống</string>
+    <string name="error_invalid_email">Email không hợp lệ</string>
+    <string name="error_enter_password">Vui lòng nhập mật khẩu</string>
+    <string name="error_password_length">Mật khẩu phải có ít nhất 6 ký tự</string>
+    <string name="error_confirm_password">Vui lòng xác nhận mật khẩu</string>
+    <string name="error_password_mismatch">Mật khẩu không khớp</string>
+    <string name="already_have_account">Đã có tài khoản?</string>
+    <string name="login_now">Đăng nhập ngay</string>
+
+    <!-- Màn hình chính -->
+    <string name="title_home">Trang chủ</string>
+    <string name="title_schedule">Lịch học</string>
+    <string name="title_history">Lịch sử</string>
+    <string name="title_classes">Lớp học</string>
+    <string name="title_reports">Thống kê</string>
+    <string name="title_account">Tài khoản</string>
+    <string name="welcome_back">Chào mừng trở lại,</string>
+    <string name="student_id_placeholder">MSSV: 20181234</string>
+    <string name="student_name_placeholder">Nguyễn Văn A</string>
+    <string name="lecturer_name_placeholder">GV. Nguyễn Văn A</string>
+    <string name="lecturer_id_placeholder">Mã GV: LECT123</string>
+    <string name="attendance_rate">Tỷ lệ chuyên cần</string>
+    <string name="class_list">Danh sách lớp học</string>
+    <string name="start_attendance">Điểm danh</string>
+
+    <!-- Chức năng về lớp học -->
+    <string name="add_class">Thêm lớp học</string>
+    <string name="add_class_dialog_title">Thêm lớp học mới</string>
+    <string name="course_name_hint">Tên học phần</string>
+    <string name="course_id_hint">Mã học phần</string>
+    <string name="class_code_hint">Mã lớp học</string>
+    <string name="semester_hint">Kì học</string>
+    <string name="schedule_info_hint">Thời gian</string>
+    <string name="add">Thêm</string>
+    <string name="cancel">Hủy</string>
+    <string name="no_classes_message">Chưa có lớp học nào</string>
+    <string name="field_required_error">Trường này không được để trống</string>
+    <string name="semester_format_error">Kì học không hợp lệ (ví dụ: 20231)</string>
+    <string name="delete_class_dialog_title">Xóa lớp học?</string>
+    <string name="delete_class_dialog_message">Bạn có chắc chắn muốn xóa lớp học "%1$s"?</string>
+    <string name="delete">Xóa</string>
+    <string name="edit">Chỉnh sửa</string>
+    <string name="edit_class_dialog_title">Chỉnh sửa lớp học</string>
+    <string name="class_code_label">Mã lớp: %1$s</string>
+    <string name="course_id_label">Mã HP: %1$s</string>
+    <string name="semester_label">Kỳ học: %1$s</string>
+
+    <string name="search_class_hint">Tìm kiếm lớp học</string>
+    <string name="no_search_results_class">Không tìm thấy lớp học nào.</string>
+
+    <!-- Chức năng về sinh viên -->
+    <string name="student_list_title">Danh sách sinh viên</string>
+    <string name="student_avatar_description">Hình đại diện của sinh viên</string>
+    <string name="no_students_message">Chưa có sinh viên nào trong lớp.</string>
+    <string name="add_student">Thêm sinh viên</string>
+    <string name="add_student_dialog_title">Thêm sinh viên mới</string>
+    <string name="student_name_hint">Tên sinh viên</string>
+    <string name="student_code_hint">Mã số sinh viên</string>
+    <string name="student_deleted_message">Đã xóa sinh viên %1$s</string>
+    <string name="undo">Hoàn tác</string>
+    <string name="options_menu">Tùy chọn</string>
+    <string name="sort_students">Sắp xếp sinh viên</string>
+    <string name="sort_by_name">Sắp xếp theo tên</string>
+    <string name="sort_by_student_id">Sắp xếp theo MSSV</string>
+    <string name="back_button_description">Quay lại</string>
+    <string name="search_student_hint">Tìm theo tên hoặc MSSV...</string>
+    <string name="no_search_results">Không tìm thấy sinh viên nào.</string>
+
+    <!-- Màn hình điểm danh -->
+    <string name="attendance_screen_title">Điểm danh</string>
+    <string name="save_attendance">Lưu điểm danh</string>
+    <string name="status_present">Có mặt</string>
+    <string name="status_absent">Vắng</string>
+    <string name="status_late">Đi muộn</string>
+    <string name="attendance_saved_successfully">Đã lưu điểm danh thành công!</string>
+
+    <!-- Màn hình chi tiết sinh viên -->
+    <string name="student_detail_title">Chi tiết sinh viên</string>
+    <string name="student_id_label_prefix">MSSV: %1$s</string>
+    <string name="attendance_history_title">Lịch sử điểm danh</string>
+    <string name="no_attendance_history">Chưa có lịch sử điểm danh.</string>
+
+    <!-- Màn hình báo cáo -->
+    <string name="export_button">Xuất file</string>
+    <string name="no_reports_message">Chưa có báo cáo nào để hiển thị.</string>
+
+    <!-- Màn hình tài khoản -->
+    <string name="logout_button">Đăng xuất</string>
+    <string name="not_logged_in">Chưa đăng nhập</string>
+    <string name="account_id_label">Mã tài khoản: %1$s</string>
+    <string name="change_password">Đổi mật khẩu</string>
+</resources>
