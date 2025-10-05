@@ -22,6 +22,7 @@ import android.net.Uri
 import androidx.core.content.ContextCompat
 import androidx.core.app.ActivityCompat
 import android.content.pm.PackageManager
+import com.example.diemdanhsinhvien.activity.EditAccountActivity
 import com.microsoft.identity.client.ISingleAccountPublicClientApplication
 import com.microsoft.identity.client.PublicClientApplication
 import java.io.IOException
@@ -35,6 +36,7 @@ class AccountFragment : Fragment() {
     private lateinit var imageViewAvatar: ImageView
     private val PICK_IMAGE_REQUEST = 123
     private lateinit var userIdTextView: TextView
+    private lateinit var editAccountButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +52,7 @@ class AccountFragment : Fragment() {
         userEmailTextView = view.findViewById(R.id.textViewUserEmail)
         imageViewAvatar = view.findViewById(R.id.imageViewAvatar)
         userIdTextView = view.findViewById(R.id.textViewUserId)
+        editAccountButton = view.findViewById(R.id.buttonEditAccount)
 
         PublicClientApplication.createSingleAccountPublicClientApplication(requireContext(),
             R.raw.auth_config_single_account,
@@ -84,6 +87,11 @@ class AccountFragment : Fragment() {
                     Toast.makeText(requireContext(), "Đăng xuất thất bại.", Toast.LENGTH_SHORT).show()
                 }
             })
+        }
+
+        editAccountButton.setOnClickListener {
+            val intent = Intent(requireActivity(), EditAccountActivity::class.java)
+            startActivity(intent)
         }
     }
 

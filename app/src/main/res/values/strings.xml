@@ -111,6 +111,8 @@
 
     <!-- Màn hình báo cáo -->
     <string name="export_button">Xuất file</string>
+    <string name="reports_title">Báo cáo thống kê</string>
+    <string name="class_reports_title">Báo cáo theo lớp</string>
     <string name="no_reports_message">Chưa có báo cáo nào để hiển thị.</string>
 
     <!-- Màn hình tài khoản -->
@@ -118,4 +120,9 @@
     <string name="not_logged_in">Chưa đăng nhập</string>
     <string name="account_id_label">Mã tài khoản: %1$s</string>
     <string name="change_password">Đổi mật khẩu</string>
+    <string name="edit_account">Sửa thông tin</string>
+    <string name="edit_account_title">Chỉnh sửa tài khoản</string>
+    <string name="display_name_hint">Tên hiển thị</string>
+    <string name="save_button">Lưu</string>
+    <string name="edit_avatar">Chỉnh sửa ảnh đại diện</string>
 </resources>

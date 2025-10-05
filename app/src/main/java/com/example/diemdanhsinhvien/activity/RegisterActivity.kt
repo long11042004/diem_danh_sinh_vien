@@ -38,7 +38,7 @@ class RegisterActivity : AppCompatActivity() {
 
         val loginNowTextView = findViewById<TextView>(R.id.textViewLoginNow)
         loginNowTextView.setOnClickListener {
-            finish() // Đóng màn hình đăng ký để quay lại màn hình đăng nhập
+            finish()
         }
     }
 
@@ -77,7 +77,6 @@ class RegisterActivity : AppCompatActivity() {
 
         var isFormValid = true
 
-        // Reset errors
         fullNameLayout.error = null
         schoolLayout.error = null
         phoneLayout.error = null
@@ -86,7 +85,6 @@ class RegisterActivity : AppCompatActivity() {
         passwordLayout.error = null
         confirmPasswordLayout.error = null
 
-        // Validate all fields
         if (fullName.isEmpty()) {
             fullNameLayout.error = getString(R.string.error_enter_full_name)
             isFormValid = false
@@ -123,7 +121,6 @@ class RegisterActivity : AppCompatActivity() {
 
         if (isFormValid) {
             Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show()
-            // TODO: Implement actual registration logic (e.g., API call)
             finish()
         }
     }
