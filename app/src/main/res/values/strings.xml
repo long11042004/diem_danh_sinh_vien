@@ -125,4 +125,7 @@
     <string name="display_name_hint">Tên hiển thị</string>
     <string name="save_button">Lưu</string>
     <string name="edit_avatar">Chỉnh sửa ảnh đại diện</string>
+    <string name="lecturer_id">Mã GV</string>
+    <string name="department">Khoa</string>
+    <string name="title">Chức danh</string>
 </resources>

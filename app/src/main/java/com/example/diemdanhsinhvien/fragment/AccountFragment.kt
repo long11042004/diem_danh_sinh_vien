@@ -17,10 +17,7 @@ import com.example.diemdanhsinhvien.activity.LoginActivity
 import com.microsoft.identity.client.IAccount
 import com.microsoft.identity.client.IPublicClientApplication
 import android.provider.MediaStore
-import android.graphics.Bitmap
 import android.net.Uri
-import androidx.core.content.ContextCompat
-import androidx.core.app.ActivityCompat
 import android.content.pm.PackageManager
 import com.example.diemdanhsinhvien.activity.EditAccountActivity
 import com.microsoft.identity.client.ISingleAccountPublicClientApplication
@@ -37,6 +34,7 @@ class AccountFragment : Fragment() {
     private val PICK_IMAGE_REQUEST = 123
     private lateinit var userIdTextView: TextView
     private lateinit var editAccountButton: Button
+    private val EDIT_ACCOUNT_REQUEST_CODE = 124
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -91,12 +89,30 @@ class AccountFragment : Fragment() {
 
         editAccountButton.setOnClickListener {
             val intent = Intent(requireActivity(), EditAccountActivity::class.java)
-            startActivity(intent)
+            startActivityForResult(intent, EDIT_ACCOUNT_REQUEST_CODE)
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == EDIT_ACCOUNT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val displayName = data?.getStringExtra("displayName")
+            val email = data?.getStringExtra("email")
+            val lecturerId = data?.getStringExtra("lecturerId")
+            val department = data?.getStringExtra("department")
+            val title = data?.getStringExtra("title")
+            val phoneNumber = data?.getStringExtra("phoneNumber")
+            val status = data?.getStringExtra("status")
+
+            userNameTextView.text = displayName ?: ""
+            userEmailTextView.text = email ?: "N/A"
+            userIdTextView.text = lecturerId?.let { "Mã GV: $it" } ?: "N/A"
+
+            Log.d("AccountFragment", "Status: $status")
+
+            Toast.makeText(requireContext(), "Đã cập nhật thông tin tài khoản.", Toast.LENGTH_SHORT).show()
+        }
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             val selectedImageUri: Uri? = data.data
@@ -111,6 +127,33 @@ class AccountFragment : Fragment() {
         }
     }
 
+    private fun loadAccountInfo() {
+        mSingleAccountApp?.getCurrentAccountAsync(object : ISingleAccountPublicClientApplication.CurrentAccountCallback {
+            override fun onAccountLoaded(activeAccount: IAccount?) {
+                activity?.runOnUiThread {
+                    if (activeAccount != null) {
+                        val displayName = activeAccount.claims?.get("name") as? String
+                        val userId = activeAccount.claims?.get("oid") as? String
+
+                        userNameTextView.text = displayName ?: getString(R.string.not_logged_in)
+                        userEmailTextView.text = activeAccount.username
+                        userIdTextView.text = if (userId != null) getString(R.string.account_id_label, userId) else ""
+
+                        Log.d("AccountFragment", "User ID: $userId")
+                    }
+                }
+            }
+
+            override fun onError(exception: MsalException) {
+                Log.e("AccountFragment", "Lỗi khi lấy thông tin tài khoản: $exception")
+            }
+
+            override fun onAccountChanged(priorAccount: IAccount?, currentAccount: IAccount?) {
+                // Not implemented for this scenario
+            }
+        })
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
@@ -122,32 +165,5 @@ class AccountFragment : Fragment() {
                 }
             }
         }
-    }
-
-    private fun loadAccountInfo() {
-        mSingleAccountApp?.getCurrentAccountAsync(object : ISingleAccountPublicClientApplication.CurrentAccountCallback {
-            override fun onAccountLoaded(activeAccount: IAccount?) {
-                activity?.runOnUiThread {
-                    if (activeAccount != null) {
-                        val displayName = activeAccount.claims?.get("name") as? String
-                        val userId = activeAccount.claims?.get("oid") as? String // Lấy Object ID
-
-                        userNameTextView.text = displayName ?: getString(R.string.not_logged_in)
-                        userEmailTextView.text = activeAccount.username
-                        userIdTextView.text = if (userId != null) getString(R.string.account_id_label, userId) else ""
-                    } else {
-                        userNameTextView.text = getString(R.string.not_logged_in)
-                        userEmailTextView.text = ""
-                        userIdTextView.text = ""
-                    }
-                }
-            }
-
-            override fun onAccountChanged(priorAccount: IAccount?, currentAccount: IAccount?) { /* Không cần xử lý ở đây */ }
-
-            override fun onError(exception: MsalException) {
-                Log.e("AccountFragment", "Lỗi khi lấy thông tin tài khoản: $exception")
-            }
-        })
     }
 }
