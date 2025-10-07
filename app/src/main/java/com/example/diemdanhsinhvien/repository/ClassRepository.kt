@@ -1,6 +1,7 @@
 package com.example.diemdanhsinhvien.repository
 
 import com.example.diemdanhsinhvien.database.entities.Class
+import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.database.relations.ClassWithStudentCount
 import com.example.diemdanhsinhvien.network.APIClient
 import kotlinx.coroutines.flow.Flow
@@ -32,18 +33,19 @@ class ClassRepository {
         return if (response.isSuccessful) response.body() else null
     }
 
-    fun getClassesWithStudentCount(): Flow<List<ClassWithStudentCount>> = flow {
+    fun getClassesWithStudentCount(): Flow<UiState<List<ClassWithStudentCount>>> = flow {
+        emit(UiState.Loading)
         try {
-            val response = APIClient.studentApi.getClassesWithStudentCount()
+            val response = APIClient.courseApi.getClassesWithStudentCount()
             if (response.isSuccessful) {
-                val list = response.body() ?: emptyList()
-                emit(list)
+                val list = response.body()?.filter { it.classInfo != null } ?: emptyList()
+                emit(UiState.Success(list))
             } else {
-                emit(emptyList())
+                emit(UiState.Error("Lỗi API: ${response.code()}"))
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            emit(emptyList())
+            emit(UiState.Error("Lỗi mạng: ${e.message}"))
         }
     }
 }

@@ -11,27 +11,27 @@ import com.example.diemdanhsinhvien.database.relations.StudentAttendanceHistory
 
 interface AttendanceApiService {
 
-    @POST("sessions/")
+    @POST("sessions")
     suspend fun insertAttendanceSession(
         @Body session: AttendanceSession
     ): Response<Long>
 
-    @POST("records/bulk/")
+    @POST("attendance/records")
     suspend fun insertAttendanceRecords(
         @Body records: List<AttendanceRecord>
     ): Response<Unit>
 
-    @GET("attendance/history/{studentId}/")
+    @GET("attendance/history/{studentId}")
     suspend fun getAttendanceHistoryForStudent(
         @Path("studentId") studentId: Int
     ): Response<List<StudentAttendanceHistory>>
 
-    @GET("sessions/class/{classId}/dates/")
+    @GET("sessions/class/{classId}/dates")
     suspend fun getUniqueSessionDatesForClass(
         @Path("classId") classId: Int
     ): Response<List<Long>>
 
-    @GET("attendance/class/{classId}/presentCount/")
+    @GET("attendance/class/{classId}/presentCount")
     suspend fun getPresentCountForClass(
         @Path("classId") classId: Int
     ): Response<Int>

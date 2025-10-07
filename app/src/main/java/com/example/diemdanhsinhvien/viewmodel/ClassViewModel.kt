@@ -2,6 +2,7 @@ package com.example.diemdanhsinhvien.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.diemdanhsinhvien.common.UiState
 import androidx.lifecycle.viewModelScope
 import com.example.diemdanhsinhvien.database.entities.Class as Course
 import com.example.diemdanhsinhvien.database.relations.ClassWithStudentCount
@@ -13,30 +14,36 @@ class ClassViewModel(private val classRepository: ClassRepository) : ViewModel()
 
     private val _searchQuery = MutableStateFlow("")
 
-    private val allClassesWithStudentCount: Flow<List<ClassWithStudentCount>> =
-        classRepository.getClassesWithStudentCount()
+    private val _classesUiState: StateFlow<UiState<List<ClassWithStudentCount>>> =
+        classRepository.getClassesWithStudentCount().stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = UiState.Loading
+        )
 
-    val isSourceClassListEmpty: StateFlow<Boolean> =
-        allClassesWithStudentCount
-            .map { it.isEmpty() }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = true
-            )
+    private val allClasses: Flow<List<ClassWithStudentCount>> = _classesUiState.map {
+        (it as? UiState.Success)?.data ?: emptyList()
+    }
+
+    val isLoading: StateFlow<Boolean> = _classesUiState.map { it is UiState.Loading }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+
+    val isSourceClassListEmpty: StateFlow<Boolean> = allClasses
+        .map { it.isEmpty() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
     val filteredClasses: StateFlow<List<ClassWithStudentCount>> = combine(
-        allClassesWithStudentCount,
-        _searchQuery
+        allClasses, _searchQuery
     ) { classes, query ->
-        if (query.isBlank()) {
-            classes
-        } else {
-            classes.filter { classWithCount ->
-                val classInfo = classWithCount.classInfo
-                classInfo.courseName.contains(query, ignoreCase = true) ||
-                classInfo.courseId.contains(query, ignoreCase = true) ||
-                classInfo.classCode.contains(query, ignoreCase = true)
+        classes.filter { classWithCount ->
+            if (query.isBlank()) {
+                true
+            } else {
+                classWithCount.classInfo?.let { info ->
+                    info.courseName?.contains(query, ignoreCase = true) == true ||
+                    info.courseId?.contains(query, ignoreCase = true) == true ||
+                    info.classCode?.contains(query, ignoreCase = true) == true
+                } ?: false
             }
         }
     }.stateIn(

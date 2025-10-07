@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
@@ -39,7 +40,6 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -48,6 +48,7 @@ class HomeFragment : Fragment() {
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewClasses)
         val emptyTextView = view.findViewById<TextView>(R.id.textViewNoClasses)
+        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
         val searchView = view.findViewById<SearchView>(R.id.searchViewClasses)
         val adapter = ClassAdapter(
             onItemClicked = { classItem ->
@@ -78,29 +79,24 @@ class HomeFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    classViewModel.filteredClasses.collect { classesWithCount ->
-                        adapter.submitList(classesWithCount)
+                combine( 
+                    classViewModel.filteredClasses,
+                    classViewModel.isSourceClassListEmpty,
+                    classViewModel.isLoading
+                ) { filteredList, isSourceEmpty, isLoading ->
+                    adapter.submitList(filteredList)
+
+                    progressBar.isVisible = isLoading
+                    searchView.isVisible = !isSourceEmpty && !isLoading
+
+                    val showEmptyView = !isLoading && filteredList.isEmpty()
+                    recyclerView.isVisible = !isLoading && !showEmptyView
+                    emptyTextView.isVisible = showEmptyView
+
+                    if (showEmptyView) {
+                        emptyTextView.text = if (isSourceEmpty) getString(R.string.no_classes_message) else getString(R.string.no_search_results_class)
                     }
-                }
-
-                launch {
-                    classViewModel.isSourceClassListEmpty.collect { isSourceEmpty ->
-                        searchView.isVisible = !isSourceEmpty
-                    }
-                }
-
-                launch {
-                    combine(classViewModel.filteredClasses, classViewModel.isSourceClassListEmpty) { filteredList, isSourceEmpty ->
-                        val showEmptyView = filteredList.isEmpty()
-                        recyclerView.isVisible = !showEmptyView
-                        emptyTextView.isVisible = showEmptyView
-
-                        if (showEmptyView) {
-                            emptyTextView.text = if (isSourceEmpty) getString(R.string.no_classes_message) else getString(R.string.no_search_results_class)
-                        }
-                    }.collect{}
-                }
+                }.collect{}
             }
         }
     }

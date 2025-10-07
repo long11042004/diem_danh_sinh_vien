@@ -79,6 +79,7 @@
 
     <!-- Chức năng về sinh viên -->
     <string name="student_list_title">Danh sách sinh viên</string>
+    <string name="invalid_class_data">Dữ liệu lớp học không hợp lệ</string>
     <string name="student_avatar_description">Hình đại diện của sinh viên</string>
     <string name="no_students_message">Chưa có sinh viên nào trong lớp.</string>
     <string name="add_student">Thêm sinh viên</string>
