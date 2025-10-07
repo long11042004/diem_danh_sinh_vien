@@ -29,10 +29,7 @@ class StudentViewModel(
     private val classId: Int
 ) : ViewModel() {
     private val _sortOrder = MutableStateFlow(SortOrder.BY_NAME)
-    val sortOrder: StateFlow<SortOrder> = _sortOrder
-
     private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery
 
     private val studentsFromRepo: Flow<List<Student>> = _sortOrder
         .flatMapLatest { sortOrder ->
@@ -83,7 +80,7 @@ class StudentViewModel(
 
 
     fun addNewStudent(studentName: String, studentId: String, classId: Int) = viewModelScope.launch {
-        val newStudent = Student(studentName = studentName, studentId = studentId, classId = classId)
+        val newStudent = Student(id= (1000..999999).random(), studentName = studentName, studentId = studentId, classId = classId)
         studentRepository.insertStudent(newStudent)
     }
 

@@ -9,7 +9,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.diemdanhsinhvien.database.AppDatabase
 import com.example.diemdanhsinhvien.database.entities.Class as ClassEntity
 import com.example.diemdanhsinhvien.fragment.HomeFragment
 import com.example.diemdanhsinhvien.repository.ClassRepository
@@ -26,10 +25,7 @@ import com.google.android.material.textfield.TextInputEditText
 class MainActivity : AppCompatActivity() {
 
     private val classViewModel: ClassViewModel by viewModels {
-        ClassViewModelFactory(ClassRepository(
-            courseDao = AppDatabase.getDatabase(this).courseDao(),
-            studentDao = AppDatabase.getDatabase(this).studentDao()
-        ))
+        ClassViewModelFactory(ClassRepository())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -157,7 +153,7 @@ class MainActivity : AppCompatActivity() {
                 } else scheduleInfoEditText.error = null
 
                 if (isValid) {
-                    val newClass = ClassEntity(courseName = courseName, courseId = courseId, classCode = classCode, semester = semester, scheduleInfo = scheduleInfo)
+                    val newClass = ClassEntity(id=(1000..999999).random(), courseName = courseName, courseId = courseId, classCode = classCode, semester = semester, scheduleInfo = scheduleInfo)
                     classViewModel.insertClass(newClass)
                     Toast.makeText(this, "Đã thêm lớp học: $courseName", Toast.LENGTH_SHORT).show()
                     dialog.dismiss() // Chỉ đóng dialog khi dữ liệu hợp lệ
@@ -232,6 +228,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
         dialog.show()
     }
 }

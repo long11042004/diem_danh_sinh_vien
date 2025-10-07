@@ -17,7 +17,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.appcompat.app.AlertDialog
-import com.example.diemdanhsinhvien.database.AppDatabase
 import com.example.diemdanhsinhvien.activity.StudentListActivity
 import com.example.diemdanhsinhvien.activity.MainActivity
 import com.example.diemdanhsinhvien.repository.ClassRepository
@@ -31,12 +30,8 @@ import kotlinx.coroutines.launch
 class HomeFragment : Fragment() {
 
     private val classViewModel: ClassViewModel by activityViewModels {
-        val database = AppDatabase.getDatabase(requireContext())
         ClassViewModelFactory(
-            ClassRepository(
-                courseDao = database.courseDao(),
-                studentDao = database.studentDao()
-            )
+            ClassRepository()
         )
     }
 

@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -24,7 +23,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.adapter.StudentAdapter
-import com.example.diemdanhsinhvien.database.AppDatabase
 import com.example.diemdanhsinhvien.repository.ClassRepository
 import com.example.diemdanhsinhvien.repository.StudentRepository
 import com.example.diemdanhsinhvien.viewmodel.SortOrder
@@ -52,16 +50,9 @@ class StudentListActivity : AppCompatActivity() {
 
     private var classId: Int = -1
     private val studentViewModel: StudentViewModel by viewModels {
-        val database = AppDatabase.getDatabase(this)
         StudentViewModelFactory(
-            studentRepository = StudentRepository(
-                studentDao = database.studentDao(),
-                attendanceDao = database.attendanceDao()
-            ),
-            classRepository = ClassRepository(
-                courseDao = database.courseDao(),
-                studentDao = database.studentDao()
-            ),
+            studentRepository = StudentRepository(),
+            classRepository = ClassRepository(),
             classId = classId
         )
     }
@@ -70,13 +61,11 @@ class StudentListActivity : AppCompatActivity() {
         const val EXTRA_CLASS_ID = "extra_class_id"
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_student_list)
 
         classId = intent.getIntExtra(EXTRA_CLASS_ID, -1)
-
 
         titleTextView = findViewById(R.id.studentListTitle)
         recyclerView = findViewById(R.id.recyclerViewStudents)

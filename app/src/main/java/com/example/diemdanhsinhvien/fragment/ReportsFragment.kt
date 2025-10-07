@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.adapter.ReportAdapter
-import com.example.diemdanhsinhvien.database.AppDatabase
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -22,6 +21,7 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.example.diemdanhsinhvien.model.Report
+import com.example.diemdanhsinhvien.network.APIClient
 import com.example.diemdanhsinhvien.repository.ReportRepository
 import com.example.diemdanhsinhvien.viewmodel.ReportViewModel
 import com.example.diemdanhsinhvien.viewmodel.ReportViewModelFactory
@@ -29,12 +29,11 @@ import com.example.diemdanhsinhvien.viewmodel.ReportViewModelFactory
 class ReportsFragment : Fragment() {
 
     private val reportViewModel: ReportViewModel by viewModels {
-        val database = AppDatabase.getDatabase(requireContext())
         ReportViewModelFactory(
             ReportRepository(
-                courseDao = database.courseDao(),
-                studentDao = database.studentDao(),
-                attendanceDao = database.attendanceDao()
+                courseApi = APIClient.courseApi,
+                studentApi = APIClient.studentApi,
+                attendanceApi = APIClient.attendanceApi
             )
         )
     }
@@ -60,12 +59,11 @@ class ReportsFragment : Fragment() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        // Quan sát LiveData từ ViewModel và cập nhật giao diện
         reportViewModel.reports.observe(viewLifecycleOwner) { reports ->
             val hasReports = reports.isNotEmpty()
             recyclerView.isVisible = hasReports
             textViewNoReports.isVisible = !hasReports
-            barChart.isVisible = hasReports // Hiển thị biểu đồ khi có báo cáo
+            barChart.isVisible = hasReports
             adapter.submitList(reports)
 
             if (hasReports) {

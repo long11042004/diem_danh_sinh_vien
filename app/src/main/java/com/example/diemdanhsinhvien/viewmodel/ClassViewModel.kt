@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 class ClassViewModel(private val classRepository: ClassRepository) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery
 
     private val allClassesWithStudentCount: Flow<List<ClassWithStudentCount>> =
         classRepository.getClassesWithStudentCount()

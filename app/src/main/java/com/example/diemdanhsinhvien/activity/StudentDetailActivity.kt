@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.adapter.AttendanceHistoryAdapter
-import com.example.diemdanhsinhvien.database.AppDatabase
 import com.example.diemdanhsinhvien.repository.StudentRepository
 import com.example.diemdanhsinhvien.viewmodel.StudentDetailViewModel
 import com.example.diemdanhsinhvien.viewmodel.StudentDetailViewModelFactory
@@ -27,10 +26,7 @@ class StudentDetailActivity : AppCompatActivity() {
 
     private val viewModel: StudentDetailViewModel by viewModels {
         StudentDetailViewModelFactory(
-            StudentRepository(
-                studentDao = AppDatabase.getDatabase(this).studentDao(),
-                attendanceDao = AppDatabase.getDatabase(this).attendanceDao()
-            ),
+            StudentRepository(),
             studentDbId
         )
     }

@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.adapter.AttendanceAdapter
-import com.example.diemdanhsinhvien.database.AppDatabase
 import com.example.diemdanhsinhvien.repository.ClassRepository
 import com.example.diemdanhsinhvien.repository.AttendanceRepository
 import com.example.diemdanhsinhvien.repository.StudentRepository
@@ -29,23 +28,16 @@ class AttendanceActivity : AppCompatActivity() {
     private lateinit var attendanceAdapter: AttendanceAdapter
 
     private val studentViewModel: StudentViewModel by viewModels {
-        val database = AppDatabase.getDatabase(this)
         StudentViewModelFactory(
-            studentRepository = StudentRepository(
-                studentDao = database.studentDao(),
-                attendanceDao = database.attendanceDao()
-            ),
-            classRepository = ClassRepository(
-                courseDao = database.courseDao(),
-                studentDao = database.studentDao()
-            ),
+            studentRepository = StudentRepository(),
+            classRepository = ClassRepository(),
             classId = classId
         )
     }
 
     private val attendanceViewModel: AttendanceViewModel by viewModels {
         AttendanceViewModelFactory(
-            AttendanceRepository(AppDatabase.getDatabase(this).attendanceDao())
+            AttendanceRepository()
         )
     }
 
