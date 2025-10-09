@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/otpToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            app:title="Xác thực OTP" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nhập mã OTP gồm 6 chữ số đã được gửi đến số điện thoại của bạn:"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="16dp">
+
+            <EditText
+                android:id="@+id/otpDigit1"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:layout_margin="4dp" />
+
+            <EditText
+                android:id="@+id/otpDigit2"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:layout_margin="4dp" />
+
+            <EditText
+                android:id="@+id/otpDigit3"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:layout_margin="4dp" />
+
+            <EditText
+                android:id="@+id/otpDigit4"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:layout_margin="4dp" />
+
+            <EditText
+                android:id="@+id/otpDigit5"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:layout_margin="4dp" />
+
+            <EditText
+                android:id="@+id/otpDigit6"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:layout_margin="4dp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/verifyOtpButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Xác minh OTP" />
+    </LinearLayout>
+</LinearLayout>

@@ -73,7 +73,6 @@ class AccountFragment : Fragment() {
         logoutButton.setOnClickListener {
             mSingleAccountApp?.signOut(object : ISingleAccountPublicClientApplication.SignOutCallback {
                 override fun onSignOut() {
-                    // Chuyển về màn hình đăng nhập
                     val intent = Intent(requireActivity(), LoginActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)

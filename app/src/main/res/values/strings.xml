@@ -4,14 +4,16 @@
     <string name="app_name">Ứng dụng điểm danh sinh viên</string>
     <string name="app_logo_description">Logo của ứng dụng</string>
     <string name="login_screen_title">Đăng nhập</string>
-    <string name="username_or_student_id">Tên đăng nhập</string>
+    <string name="username">Tên đăng nhập</string>
     <string name="password">Mật khẩu</string>
     <string name="remember_me">Ghi nhớ đăng nhập</string>
     <string name="forgot_password">Quên mật khẩu?</string>
     <string name="login_button">Đăng nhập</string>
     <string name="no_account_yet">Chưa có tài khoản?</string>
     <string name="register_now">Đăng ký ngay</string>
+    <string name="error_enter_confirm_password">Vui lòng nhập lại mật khẩu</string>
     <string name="login_error_message">Tên đăng nhập hoặc mật khẩu không đúng.</string>
+    <string name="error_enter_username">Vui lòng nhập tên đăng nhập</string>
     <string name="or_sign_in_with">Hoặc đăng nhập với</string>
     <string name="sign_in_with_microsoft">Office 365</string>
 

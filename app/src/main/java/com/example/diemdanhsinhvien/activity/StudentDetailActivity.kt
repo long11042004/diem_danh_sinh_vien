@@ -53,11 +53,9 @@ class StudentDetailActivity : AppCompatActivity() {
             return
         }
 
-        // Lấy dữ liệu từ Intent
         val studentName = intent.getStringExtra(EXTRA_STUDENT_NAME)
         val studentCode = intent.getStringExtra(EXTRA_STUDENT_CODE)
 
-        // Hiển thị dữ liệu lên giao diện
         val nameTextView = findViewById<TextView>(R.id.textViewStudentName)
         val idTextView = findViewById<TextView>(R.id.textViewStudentId)
         val avatarImageView = findViewById<ImageView>(R.id.imageViewAvatarDetail)

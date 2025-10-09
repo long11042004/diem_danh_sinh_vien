@@ -45,7 +45,7 @@ class ClassRepository {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            emit(UiState.Error("Lỗi mạng: ${e.message}"))
+            emit(UiState.Error("Lỗi kết nối: ${e.message}"))
         }
     }
 }
