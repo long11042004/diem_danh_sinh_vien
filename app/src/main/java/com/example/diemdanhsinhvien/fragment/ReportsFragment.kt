@@ -48,6 +48,7 @@ class ReportsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        Log.d("ReportsFragment", "onViewCreated called")
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewReports)
         val textViewNoReports = view.findViewById<TextView>(R.id.textViewNoReports)
         val barChart = view.findViewById<BarChart>(R.id.barChartAttendance)
@@ -60,6 +61,7 @@ class ReportsFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         reportViewModel.reports.observe(viewLifecycleOwner) { reports ->
+            Log.d("ReportsFragment", "Reports observed: ${reports.size} reports")
             val hasReports = reports.isNotEmpty()
             recyclerView.isVisible = hasReports
             textViewNoReports.isVisible = !hasReports
@@ -73,6 +75,7 @@ class ReportsFragment : Fragment() {
     }
 
     private fun setupBarChart(barChart: BarChart, reports: List<Report>) {
+         Log.d("ReportsFragment", "Setting up bar chart with ${reports.size} reports")
         val entries = ArrayList<BarEntry>()
         val labels = ArrayList<String>()
 
@@ -103,6 +106,7 @@ class ReportsFragment : Fragment() {
     }
 
     private fun exportReport(report: Report) {
+        Log.i("ReportsFragment", "Exporting report for course: ${report.courseName}")
         // TODO: Triển khai logic xuất file báo cáo (ví dụ: tạo file Excel/PDF)
         Toast.makeText(context, "Đang xuất báo cáo cho lớp: ${report.courseName}", Toast.LENGTH_SHORT).show()
     }

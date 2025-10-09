@@ -156,10 +156,10 @@ class RegisterActivity : AppCompatActivity() {
         if (email.isEmpty()) {
             emailLayout.error = getString(R.string.error_enter_email)
             isFormValid = false
+
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             emailLayout.error = getString(R.string.error_invalid_email)
                 isFormValid = false
-
         }
 
         return isFormValid

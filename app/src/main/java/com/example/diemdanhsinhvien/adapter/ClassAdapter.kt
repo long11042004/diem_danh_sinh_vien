@@ -47,21 +47,20 @@ class ClassAdapter(
 
         fun bind(classWithCount: ClassWithStudentCount) {
             currentClass = classWithCount
-            val classItem = classWithCount.classInfo
 
-            if (classItem != null) {
-                courseNameTextView.text = classItem.courseName
-                courseIdTextView.text = itemView.context.getString(R.string.course_id_label, classItem.courseId)
-                classCodeTextView.text = itemView.context.getString(R.string.class_code_label, classItem.classCode)
-                semesterTextView.text = itemView.context.getString(R.string.semester_label, classItem.semester)
-                scheduleInfoTextView.text = classItem.scheduleInfo
+            if (!classWithCount.courseName.isNullOrBlank()) {
+                courseNameTextView.text = classWithCount.courseName
+                courseIdTextView.text = itemView.context.getString(R.string.course_id_label, classWithCount.courseId)
+                classCodeTextView.text = itemView.context.getString(R.string.class_code_label, classWithCount.classCode)
+                semesterTextView.text = itemView.context.getString(R.string.semester_label, classWithCount.semester)
+                scheduleInfoTextView.text = classWithCount.scheduleInfo
 
                 itemView.isClickable = true
                 menuButton.isEnabled = true
                 menuButton.alpha = 1.0f
             } else {
                 courseNameTextView.text = itemView.context.getString(R.string.invalid_class_data)
-                listOf(courseIdTextView, classCodeTextView, semesterTextView, scheduleInfoTextView).forEach { it.text = "" }
+                listOf(courseIdTextView, classCodeTextView, semesterTextView, scheduleInfoTextView, studentCountTextView).forEach { it.text = "" }
                 itemView.isClickable = false
                 menuButton.isEnabled = false
                 menuButton.alpha = 0.5f
@@ -100,7 +99,8 @@ class ClassAdapter(
 
     object DiffCallback : DiffUtil.ItemCallback<ClassWithStudentCount>() {
         override fun areItemsTheSame(oldItem: ClassWithStudentCount, newItem: ClassWithStudentCount): Boolean {
-            return oldItem.classInfo?.id == newItem.classInfo?.id
+            // Assuming 'id' is now a direct property of ClassWithStudentCount
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: ClassWithStudentCount, newItem: ClassWithStudentCount): Boolean = oldItem == newItem

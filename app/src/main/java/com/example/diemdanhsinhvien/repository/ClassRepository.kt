@@ -1,11 +1,14 @@
 package com.example.diemdanhsinhvien.repository
 
+import android.util.Log
 import com.example.diemdanhsinhvien.database.entities.Class
 import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.database.relations.ClassWithStudentCount
 import com.example.diemdanhsinhvien.network.APIClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 class ClassRepository {
 
@@ -38,7 +41,8 @@ class ClassRepository {
         try {
             val response = APIClient.courseApi.getClassesWithStudentCount()
             if (response.isSuccessful) {
-                val list = response.body()?.filter { it.classInfo != null } ?: emptyList()
+                val list = response.body() ?: emptyList()
+                Log.d("API", "Response: $list")
                 emit(UiState.Success(list))
             } else {
                 emit(UiState.Error("Lỗi API: ${response.code()}"))
@@ -47,5 +51,5 @@ class ClassRepository {
             e.printStackTrace()
             emit(UiState.Error("Lỗi kết nối: ${e.message}"))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }

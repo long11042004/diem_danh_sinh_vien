@@ -56,14 +56,30 @@ class HomeFragment : Fragment() {
         val adapter = ClassAdapter(
             onItemClicked = { classItem ->
                 val intent = Intent(activity, StudentListActivity::class.java)
-                intent.putExtra(StudentListActivity.EXTRA_CLASS_ID, classItem.classInfo.id)
+                intent.putExtra(StudentListActivity.EXTRA_CLASS_ID, classItem.id)
                 startActivity(intent)
             },
             onEditClicked = { classToEdit ->
-                (activity as? MainActivity)?.showEditClassDialog(classToEdit.classInfo)
+                val classObject = com.example.diemdanhsinhvien.database.entities.Class(
+                    id = classToEdit.id,
+                    courseName = classToEdit.courseName,
+                    courseId = classToEdit.courseId,
+                    classCode = classToEdit.classCode,
+                    semester = classToEdit.semester,
+                    scheduleInfo = classToEdit.scheduleInfo ?: ""
+                )
+                (activity as? MainActivity)?.showEditClassDialog(classObject)
             },
             onDeleteClicked = { classToDelete ->
-                showDeleteConfirmationDialog(classToDelete.classInfo)
+                val classObject = com.example.diemdanhsinhvien.database.entities.Class(
+                    id = classToDelete.id,
+                    courseName = classToDelete.courseName,
+                    courseId = classToDelete.courseId,
+                    classCode = classToDelete.classCode,
+                    semester = classToDelete.semester,
+                    scheduleInfo = classToDelete.scheduleInfo ?: ""
+                )
+                showDeleteConfirmationDialog(classObject)
             }
         )
         recyclerView.adapter = adapter
@@ -94,9 +110,7 @@ class HomeFragment : Fragment() {
                 ) { filteredList, isSourceEmpty, isLoading, errorMessage ->
                     adapter.submitList(filteredList)
 
-                    // Hiển thị chỉ báo của SwipeRefreshLayout khi đang tải
                     swipeRefreshLayout.isRefreshing = isLoading
-                    // Chỉ hiển thị ProgressBar ở giữa màn hình khi tải lần đầu và danh sách trống
                     progressBar.isVisible = isLoading && filteredList.isEmpty() && errorMessage == null
 
                     searchView.isVisible = !isLoading && !isSourceEmpty && errorMessage == null

@@ -18,7 +18,9 @@ class ClassViewModel(private val classRepository: ClassRepository) : ViewModel()
 
     private val _classesUiState: StateFlow<UiState<List<ClassWithStudentCount>>> =
         _refreshTrigger.flatMapLatest {
-            classRepository.getClassesWithStudentCount()
+            classRepository.getClassesWithStudentCount().onEach { uiState ->
+                Log.d("ClassViewModel", "New UI State received: $uiState")
+            }
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -43,11 +45,9 @@ class ClassViewModel(private val classRepository: ClassRepository) : ViewModel()
             if (query.isBlank()) {
                 true
             } else {
-                classWithCount.classInfo?.let { info ->
-                    info.courseName?.contains(query, ignoreCase = true) == true ||
-                    info.courseId?.contains(query, ignoreCase = true) == true ||
-                    info.classCode?.contains(query, ignoreCase = true) == true
-                } ?: false
+                classWithCount.courseName?.contains(query, ignoreCase = true) == true ||
+                classWithCount.courseId?.contains(query, ignoreCase = true) == true ||
+                classWithCount.classCode?.contains(query, ignoreCase = true) == true
             }
         }
         .also { Log.d("ClassViewModel", "Filtered classes: ${it.size}, Query: ${query}") }
