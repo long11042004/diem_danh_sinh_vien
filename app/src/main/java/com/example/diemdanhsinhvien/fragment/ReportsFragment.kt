@@ -2,8 +2,10 @@ package com.example.diemdanhsinhvien.fragment
 
 import android.os.Bundle
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ProgressBar
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
@@ -19,8 +21,10 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
-import com.example.diemdanhsinhvien.model.Report
+import com.example.diemdanhsinhvien.common.UiState
+import com.example.diemdanhsinhvien.data.model.Report
 import com.example.diemdanhsinhvien.network.APIClient
 import com.example.diemdanhsinhvien.repository.ReportRepository
 import com.example.diemdanhsinhvien.viewmodel.ReportViewModel
@@ -52,6 +56,7 @@ class ReportsFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewReports)
         val textViewNoReports = view.findViewById<TextView>(R.id.textViewNoReports)
         val barChart = view.findViewById<BarChart>(R.id.barChartAttendance)
+        val progressBar = view.findViewById<ProgressBar>(R.id.progressBarReports)
 
         val adapter = ReportAdapter { report ->
             exportReport(report)
@@ -60,22 +65,46 @@ class ReportsFragment : Fragment() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        reportViewModel.reports.observe(viewLifecycleOwner) { reports ->
-            Log.d("ReportsFragment", "Reports observed: ${reports.size} reports")
-            val hasReports = reports.isNotEmpty()
-            recyclerView.isVisible = hasReports
-            textViewNoReports.isVisible = !hasReports
-            barChart.isVisible = hasReports
-            adapter.submitList(reports)
-
-            if (hasReports) {
-                setupBarChart(barChart, reports)
+        reportViewModel.reports.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    Log.d("ReportsFragment", "Đang tải báo cáo...")
+                    progressBar.isVisible = true
+                    recyclerView.isVisible = false
+                    textViewNoReports.isVisible = false
+                }
+                is UiState.Success -> {
+                    val reports = state.data
+                    progressBar.isVisible = false
+                    Log.d("ReportsFragment", "Quan sát thấy báo cáo: ${reports.size} báo cáo")
+                    val hasReports = reports.isNotEmpty()
+                    recyclerView.isVisible = hasReports
+                    textViewNoReports.isVisible = !hasReports
+                    barChart.isVisible = hasReports
+                    adapter.submitList(reports)
+                    if (hasReports) {
+                        setupBarChart(barChart, reports)
+                    }
+                }
+                is UiState.Error -> {
+                    Log.e("ReportsFragment", "Lỗi: ${state.message}")
+                    progressBar.isVisible = false
+                    Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+                    recyclerView.isVisible = false
+                    textViewNoReports.isVisible = true
+                }
+                else -> {
+                    progressBar.isVisible = false
+                    Log.w("ReportsFragment", "Quan sát thấy trạng thái null hoặc không được xử lý.")
+                    recyclerView.isVisible = false
+                    textViewNoReports.isVisible = true
+                }
             }
         }
     }
 
     private fun setupBarChart(barChart: BarChart, reports: List<Report>) {
-         Log.d("ReportsFragment", "Setting up bar chart with ${reports.size} reports")
+        Log.d("ReportsFragment", "Setting up bar chart with ${reports.size} reports")
         val entries = ArrayList<BarEntry>()
         val labels = ArrayList<String>()
 
@@ -86,12 +115,15 @@ class ReportsFragment : Fragment() {
 
         val barDataSet = BarDataSet(entries, "Tỷ lệ điểm danh (%)")
         barDataSet.colors = ColorTemplate.MATERIAL_COLORS.toList()
+        barDataSet.valueFormatter = object : ValueFormatter() {
+            override fun getFormattedValue(value: Float): String =
+                "${String.format("%.1f", value)}%"
+        }
         barDataSet.valueTextColor = Color.BLACK
         barDataSet.valueTextSize = 10f
 
         val barData = BarData(barDataSet)
         barChart.data = barData
-
         barChart.description.isEnabled = false
         barChart.setFitBars(true)
         barChart.animateY(1000)

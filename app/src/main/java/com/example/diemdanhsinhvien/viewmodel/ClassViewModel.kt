@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.diemdanhsinhvien.common.UiState
 import androidx.lifecycle.viewModelScope
-import com.example.diemdanhsinhvien.database.entities.Class as Course
-import com.example.diemdanhsinhvien.database.relations.ClassWithStudentCount
+import com.example.diemdanhsinhvien.data.model.Class as Course
+import com.example.diemdanhsinhvien.data.relations.ClassWithStudentCount
 import android.util.Log
 import com.example.diemdanhsinhvien.repository.ClassRepository
 import kotlinx.coroutines.flow.*

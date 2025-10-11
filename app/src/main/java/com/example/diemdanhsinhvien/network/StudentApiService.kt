@@ -1,7 +1,6 @@
 package com.example.diemdanhsinhvien.network
 
-import com.example.diemdanhsinhvien.database.entities.Student
-import com.example.diemdanhsinhvien.database.relations.ClassWithStudentCount
+import com.example.diemdanhsinhvien.data.model.Student
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE

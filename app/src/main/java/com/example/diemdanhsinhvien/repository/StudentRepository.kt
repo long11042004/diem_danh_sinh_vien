@@ -1,7 +1,7 @@
 package com.example.diemdanhsinhvien.repository
 
-import com.example.diemdanhsinhvien.database.entities.Student
-import com.example.diemdanhsinhvien.database.relations.StudentAttendanceHistory
+import com.example.diemdanhsinhvien.data.model.Student
+import com.example.diemdanhsinhvien.data.relations.StudentAttendanceHistory
 import com.example.diemdanhsinhvien.network.APIClient
 import com.example.diemdanhsinhvien.viewmodel.SortOrder
 import kotlinx.coroutines.flow.Flow

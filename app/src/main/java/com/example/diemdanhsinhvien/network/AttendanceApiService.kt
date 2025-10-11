@@ -5,9 +5,9 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
-import com.example.diemdanhsinhvien.database.entities.AttendanceRecord
-import com.example.diemdanhsinhvien.database.entities.AttendanceSession
-import com.example.diemdanhsinhvien.database.relations.StudentAttendanceHistory
+import com.example.diemdanhsinhvien.data.model.AttendanceRecord
+import com.example.diemdanhsinhvien.data.model.AttendanceSession
+import com.example.diemdanhsinhvien.data.relations.StudentAttendanceHistory
 
 interface AttendanceApiService {
 

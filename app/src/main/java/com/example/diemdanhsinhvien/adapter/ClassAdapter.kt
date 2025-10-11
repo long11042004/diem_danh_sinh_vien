@@ -10,8 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.diemdanhsinhvien.R
-import com.example.diemdanhsinhvien.database.entities.Class
-import com.example.diemdanhsinhvien.database.relations.ClassWithStudentCount
+import com.example.diemdanhsinhvien.data.relations.ClassWithStudentCount
 
 class ClassAdapter(
     private val onItemClicked: (ClassWithStudentCount) -> Unit,

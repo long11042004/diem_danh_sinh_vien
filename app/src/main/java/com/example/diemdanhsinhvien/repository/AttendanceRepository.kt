@@ -1,8 +1,8 @@
 package com.example.diemdanhsinhvien.repository
 
 import com.example.diemdanhsinhvien.adapter.AttendanceStatus
-import com.example.diemdanhsinhvien.database.entities.AttendanceRecord
-import com.example.diemdanhsinhvien.database.entities.AttendanceSession
+import com.example.diemdanhsinhvien.data.model.AttendanceRecord
+import com.example.diemdanhsinhvien.data.model.AttendanceSession
 import com.example.diemdanhsinhvien.network.APIClient
 
 class AttendanceRepository {

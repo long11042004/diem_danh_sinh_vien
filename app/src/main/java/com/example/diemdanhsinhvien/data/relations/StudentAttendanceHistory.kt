@@ -1,4 +1,4 @@
-package com.example.diemdanhsinhvien.database.relations
+package com.example.diemdanhsinhvien.data.relations
 
 import com.example.diemdanhsinhvien.adapter.AttendanceStatus
 

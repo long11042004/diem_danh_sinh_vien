@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.diemdanhsinhvien.R
-import com.example.diemdanhsinhvien.model.Report
+import com.example.diemdanhsinhvien.data.model.Report
 
 class ReportAdapter(private val onItemClicked: (Report) -> Unit) :
     ListAdapter<Report, ReportAdapter.ReportViewHolder>(DiffCallback) {
@@ -34,7 +34,9 @@ class ReportAdapter(private val onItemClicked: (Report) -> Unit) :
         fun bind(report: Report, onItemClicked: (Report) -> Unit) {
             textViewCourseName.text = report.courseName
             textViewClassCode.text = "Mã lớp: ${report.classCode}"
-            textViewAttendanceRate.text = "Tỷ lệ chuyên cần: ${report.attendanceRate}%"
+        
+            val formattedRate = String.format("%.1f%%", report.attendanceRate)
+            textViewAttendanceRate.text = "Tỷ lệ chuyên cần: ${formattedRate}"
 
             buttonExport.setOnClickListener {
                 onItemClicked(report)

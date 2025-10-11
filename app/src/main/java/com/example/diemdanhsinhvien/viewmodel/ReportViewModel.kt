@@ -4,12 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
-import com.example.diemdanhsinhvien.model.Report
+import com.example.diemdanhsinhvien.common.UiState
+import com.example.diemdanhsinhvien.data.model.Report
 import com.example.diemdanhsinhvien.repository.ReportRepository
 import kotlinx.coroutines.Dispatchers
 
 class ReportViewModel(repository: ReportRepository) : ViewModel() {
-    val reports: LiveData<List<Report>> = repository.getReports().asLiveData(Dispatchers.IO)
+    val reports: LiveData<UiState<List<Report>>> = repository.getReports().asLiveData(Dispatchers.IO)
 }
 
 class ReportViewModelFactory(private val repository: ReportRepository) : ViewModelProvider.Factory {

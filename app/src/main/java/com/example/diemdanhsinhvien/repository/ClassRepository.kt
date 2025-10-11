@@ -1,9 +1,9 @@
 package com.example.diemdanhsinhvien.repository
 
 import android.util.Log
-import com.example.diemdanhsinhvien.database.entities.Class
+import com.example.diemdanhsinhvien.data.model.Class
 import com.example.diemdanhsinhvien.common.UiState
-import com.example.diemdanhsinhvien.database.relations.ClassWithStudentCount
+import com.example.diemdanhsinhvien.data.relations.ClassWithStudentCount
 import com.example.diemdanhsinhvien.network.APIClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

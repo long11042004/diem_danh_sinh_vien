@@ -9,7 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.diemdanhsinhvien.database.entities.Class as ClassEntity
+import com.example.diemdanhsinhvien.data.model.Class as ClassEntity
 import com.example.diemdanhsinhvien.fragment.HomeFragment
 import com.example.diemdanhsinhvien.repository.ClassRepository
 import com.example.diemdanhsinhvien.viewmodel.ClassViewModel

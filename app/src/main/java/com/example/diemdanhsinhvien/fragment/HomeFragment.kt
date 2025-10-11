@@ -60,7 +60,7 @@ class HomeFragment : Fragment() {
                 startActivity(intent)
             },
             onEditClicked = { classToEdit ->
-                val classObject = com.example.diemdanhsinhvien.database.entities.Class(
+                val classObject = com.example.diemdanhsinhvien.data.model.Class(
                     id = classToEdit.id,
                     courseName = classToEdit.courseName,
                     courseId = classToEdit.courseId,
@@ -71,7 +71,7 @@ class HomeFragment : Fragment() {
                 (activity as? MainActivity)?.showEditClassDialog(classObject)
             },
             onDeleteClicked = { classToDelete ->
-                val classObject = com.example.diemdanhsinhvien.database.entities.Class(
+                val classObject = com.example.diemdanhsinhvien.data.model.Class(
                     id = classToDelete.id,
                     courseName = classToDelete.courseName,
                     courseId = classToDelete.courseId,
@@ -134,7 +134,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun showDeleteConfirmationDialog(classToDelete: com.example.diemdanhsinhvien.database.entities.Class) {
+    private fun showDeleteConfirmationDialog(classToDelete: com.example.diemdanhsinhvien.data.model.Class) {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.delete_class_dialog_title)
             .setMessage(getString(R.string.delete_class_dialog_message, classToDelete.courseName))

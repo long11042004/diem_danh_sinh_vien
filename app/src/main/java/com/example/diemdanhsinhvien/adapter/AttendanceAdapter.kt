@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.diemdanhsinhvien.R
-import com.example.diemdanhsinhvien.database.entities.Student
+import com.example.diemdanhsinhvien.data.model.Student
 
 enum class AttendanceStatus {
     PRESENT, ABSENT, LATE

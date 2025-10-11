@@ -3,7 +3,7 @@ package com.example.diemdanhsinhvien.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.diemdanhsinhvien.database.relations.StudentAttendanceHistory
+import com.example.diemdanhsinhvien.data.relations.StudentAttendanceHistory
 import com.example.diemdanhsinhvien.repository.StudentRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

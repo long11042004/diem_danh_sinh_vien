@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.diemdanhsinhvien.R
-import com.example.diemdanhsinhvien.database.relations.StudentAttendanceHistory
+import com.example.diemdanhsinhvien.data.relations.StudentAttendanceHistory
 import com.google.android.material.chip.Chip
 import java.text.SimpleDateFormat
 import java.util.Date

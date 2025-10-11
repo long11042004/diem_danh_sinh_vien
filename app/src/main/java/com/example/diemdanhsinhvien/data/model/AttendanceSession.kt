@@ -1,4 +1,4 @@
-package com.example.diemdanhsinhvien.database.entities
+package com.example.diemdanhsinhvien.data.model
 
 data class AttendanceSession(
     val id: Int,

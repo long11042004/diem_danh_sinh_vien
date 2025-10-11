@@ -3,8 +3,8 @@ package com.example.diemdanhsinhvien.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.diemdanhsinhvien.database.entities.Class as Course
-import com.example.diemdanhsinhvien.database.entities.Student
+import com.example.diemdanhsinhvien.data.model.Class as Course
+import com.example.diemdanhsinhvien.data.model.Student
 import com.example.diemdanhsinhvien.repository.ClassRepository
 import com.example.diemdanhsinhvien.repository.StudentRepository
 import kotlinx.coroutines.flow.Flow

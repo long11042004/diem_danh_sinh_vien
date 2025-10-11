@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.diemdanhsinhvien.R
-import com.example.diemdanhsinhvien.database.entities.Student
+import com.example.diemdanhsinhvien.data.model.Student
 
 class StudentAdapter(private val onItemClicked: (Student) -> Unit) :
     ListAdapter<Student, StudentAdapter.StudentViewHolder>(StudentDiffCallback) {

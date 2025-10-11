@@ -1,6 +1,4 @@
-package com.example.diemdanhsinhvien.database.relations
-
-import com.example.diemdanhsinhvien.database.entities.Class
+package com.example.diemdanhsinhvien.data.relations
 
 data class ClassWithStudentCount(
     val id: Int,
