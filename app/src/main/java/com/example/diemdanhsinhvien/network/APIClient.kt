@@ -38,4 +38,8 @@ object APIClient {
     val attendanceApi: AttendanceApiService by lazy {
         retrofit.create(AttendanceApiService::class.java)
     }
+
+    val accountApi: AccountApiService by lazy {
+        retrofit.create(AccountApiService::class.java)
+    }
 }

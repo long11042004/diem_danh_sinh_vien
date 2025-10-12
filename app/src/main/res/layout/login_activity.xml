@@ -14,6 +14,16 @@
         android:layout_height="wrap_content"
         android:padding="24dp">
 
+        <ProgressBar
+            android:id="@+id/loginProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
         <!-- Logo hoặc Tiêu đề ứng dụng -->
         <ImageView
             android:id="@+id/imageViewLogo"

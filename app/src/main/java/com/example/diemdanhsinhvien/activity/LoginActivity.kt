@@ -5,13 +5,22 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import com.example.diemdanhsinhvien.R
+import com.example.diemdanhsinhvien.common.UiState
+import com.example.diemdanhsinhvien.data.request.LoginRequest
+import com.example.diemdanhsinhvien.network.APIClient
+import com.example.diemdanhsinhvien.repository.AccountRepository
+import com.example.diemdanhsinhvien.viewmodel.AuthViewModel
+import com.example.diemdanhsinhvien.viewmodel.AuthViewModelFactory
 import com.microsoft.identity.client.*
 import com.microsoft.identity.client.exception.MsalException
 import com.google.android.material.textfield.TextInputLayout
@@ -19,6 +28,10 @@ import com.google.android.material.textfield.TextInputLayout
 class LoginActivity : AppCompatActivity() {
 
     private var mSingleAccountApp: ISingleAccountPublicClientApplication? = null
+
+    private val authViewModel: AuthViewModel by viewModels {
+        AuthViewModelFactory(AccountRepository(APIClient.accountApi))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +59,7 @@ class LoginActivity : AppCompatActivity() {
             })
 
         setupClickListeners()
+        observeViewModel()
     }
 
     private fun setupClickListeners() {
@@ -58,6 +72,8 @@ class LoginActivity : AppCompatActivity() {
         val registerTextView = findViewById<TextView>(R.id.textViewRegister)
         val microsoftSignInButton = findViewById<Button>(R.id.microsoftSignInButton)
         val errorTextView = findViewById<TextView>(R.id.textViewLoginError)
+        // Giả sử bạn đã thêm ProgressBar với id này vào layout
+        val loginProgressBar = findViewById<ProgressBar>(R.id.loginProgressBar)
 
         loginButton.setOnClickListener {
             
@@ -81,11 +97,8 @@ class LoginActivity : AppCompatActivity() {
             }
 
             if (isFormValid) {
-                if (username == "lecturer" && password == "123") {
-                    navigateToMain()
-                } else {
-                    errorTextView.visibility = View.VISIBLE
-                }
+                val request = LoginRequest(loginName = username, password = password)
+                authViewModel.login(request)
             }
         }
 
@@ -100,6 +113,41 @@ class LoginActivity : AppCompatActivity() {
 
         microsoftSignInButton.setOnClickListener {
             signInWithMicrosoft()
+        }
+    }
+
+    private fun observeViewModel() {
+        val errorTextView = findViewById<TextView>(R.id.textViewLoginError)
+        val loginProgressBar = findViewById<ProgressBar>(R.id.loginProgressBar)
+        val loginButton = findViewById<Button>(R.id.buttonLogin)
+
+        authViewModel.loginResult.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    loginProgressBar.isVisible = true
+                    loginButton.isEnabled = false
+                    errorTextView.isVisible = false
+                }
+                is UiState.Success -> {
+                    loginProgressBar.isVisible = false
+                    loginButton.isEnabled = true
+                    val fullName = state.data.fullName
+                    Toast.makeText(this, "Chào mừng, $fullName!", Toast.LENGTH_SHORT).show()
+                    // TODO: Lưu thông tin người dùng (ví dụ: state.data.id) vào SharedPreferences để sử dụng sau này.
+                    navigateToMain()
+                }
+                is UiState.Error -> {
+                    loginProgressBar.isVisible = false
+                    loginButton.isEnabled = true
+                    errorTextView.text = "Tài khoản hoặc mật khẩu không đúng"
+                    errorTextView.isVisible = true
+                }
+                else -> {
+                    loginProgressBar.isVisible = false
+                    loginButton.isEnabled = true
+                    errorTextView.isVisible = false
+                }
+            }
         }
     }
 
