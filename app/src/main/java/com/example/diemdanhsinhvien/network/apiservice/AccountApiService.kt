@@ -21,11 +21,6 @@ interface AccountApiService {
     @GET("accounts/details")
     suspend fun getAccountDetails(): Response<Account>
 
-    @GET("accounts/{id}")
-    suspend fun getAccountById(
-        @Path("id") id: Int
-    ): Response<Account>
-
     @PUT("accounts/{id}")
     suspend fun update(
         @Path("id") id: Int,

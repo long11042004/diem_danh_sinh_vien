@@ -166,11 +166,7 @@ class HomeFragment : Fragment() {
                     state.data?.let { account ->
                         lecturerNameTextView.text = account.fullName
                         lecturerIdTextView.text = getString(R.string.lecturer_id_format, account.teacherId)
-                        Log.i("HomeFragment", "Account details received: $account")
-                    } ?: run {
-                        lecturerNameTextView.text = getString(R.string.not_logged_in)
-                        lecturerIdTextView.text = ""
-                        Log.w("HomeFragment", "Account details are null.")
+                        Log.i("HomeFragment", "Details: $account")
                     }
                 }
                 is UiState.Error -> {

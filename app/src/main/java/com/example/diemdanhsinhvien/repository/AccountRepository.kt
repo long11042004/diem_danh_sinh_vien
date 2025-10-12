@@ -1,5 +1,6 @@
 package com.example.diemdanhsinhvien.repository
 
+import android.util.Log
 import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.data.model.Account
 import com.example.diemdanhsinhvien.data.request.LoginRequest
@@ -50,9 +51,11 @@ class AccountRepository(private val accountApi: AccountApiService) {
             if (response.isSuccessful) {
                 response.body()?.let { accountDetails ->
                     emit(UiState.Success(accountDetails))
+                    Log.i("AccountRepository", "Chi tiết tài khoản: $accountDetails")
                 } ?: emit(UiState.Error("Không nhận được dữ liệu tài khoản."))
             } else {
                 emit(UiState.Error("Lỗi ${response.code()}: ${response.message()}"))
+                Log.i("AccountRepository", "Lỗi ${response.code()}: ${response.message()}")
             }
         } catch (e: Exception) {
             emit(UiState.Error(e.localizedMessage ?: "Đã có lỗi không xác định xảy ra"))

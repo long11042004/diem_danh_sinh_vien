@@ -136,12 +136,14 @@ class LoginActivity : AppCompatActivity() {
                 }
                 is UiState.Success -> {
                     val loginData = state.data
+                    val account = loginData.account
+                    Log.i("LoginActivity", "Đăng nhập thành công. Dữ liệu nhận được: $account")
 
                     sessionManager.saveTokens(loginData.accessToken, loginData.refreshToken)
                     loginProgressBar.isVisible = false
                     loginButton.isEnabled = true
                     
-                    Toast.makeText(this, "Chào mừng, ${loginData.account.fullName}!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Chào mừng, ${account.fullName}!", Toast.LENGTH_SHORT).show()
                     navigateToMain()
                 }
                 is UiState.Error -> {
@@ -180,13 +182,11 @@ class LoginActivity : AppCompatActivity() {
             }
 
             override fun onError(exception: MsalException) {
-                
                 Log.e("MSAL", "Lỗi xác thực: $exception")
                 Toast.makeText(this@LoginActivity, "Đăng nhập thất bại: ${exception.message}", Toast.LENGTH_LONG).show()
             }
 
             override fun onCancel() {
-                
                 Log.d("MSAL", "Người dùng đã hủy đăng nhập.")
             }
         }
