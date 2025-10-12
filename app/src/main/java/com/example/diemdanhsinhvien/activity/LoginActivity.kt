@@ -17,7 +17,8 @@ import androidx.core.view.isVisible
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.data.request.LoginRequest
-import com.example.diemdanhsinhvien.network.APIClient
+import com.example.diemdanhsinhvien.network.apiservice.APIClient
+import com.example.diemdanhsinhvien.manager.SessionManager
 import com.example.diemdanhsinhvien.repository.AccountRepository
 import com.example.diemdanhsinhvien.viewmodel.AuthViewModel
 import com.example.diemdanhsinhvien.viewmodel.AuthViewModelFactory
@@ -28,9 +29,12 @@ import com.google.android.material.textfield.TextInputLayout
 class LoginActivity : AppCompatActivity() {
 
     private var mSingleAccountApp: ISingleAccountPublicClientApplication? = null
+    private lateinit var sessionManager: SessionManager
 
     private val authViewModel: AuthViewModel by viewModels {
-        AuthViewModelFactory(AccountRepository(APIClient.accountApi))
+        AuthViewModelFactory(AccountRepository(
+            APIClient.accountApi(applicationContext)
+        ))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
         val registerTextView = findViewById<TextView>(R.id.textViewRegister)
         val microsoftSignInButton = findViewById<Button>(R.id.microsoftSignInButton)
         val errorTextView = findViewById<TextView>(R.id.textViewLoginError)
-        // Giả sử bạn đã thêm ProgressBar với id này vào layout
+
         val loginProgressBar = findViewById<ProgressBar>(R.id.loginProgressBar)
 
         loginButton.setOnClickListener {
@@ -121,6 +125,8 @@ class LoginActivity : AppCompatActivity() {
         val loginProgressBar = findViewById<ProgressBar>(R.id.loginProgressBar)
         val loginButton = findViewById<Button>(R.id.buttonLogin)
 
+        sessionManager = SessionManager(applicationContext)
+
         authViewModel.loginResult.observe(this) { state ->
             when (state) {
                 is UiState.Loading -> {
@@ -129,11 +135,13 @@ class LoginActivity : AppCompatActivity() {
                     errorTextView.isVisible = false
                 }
                 is UiState.Success -> {
+                    val loginData = state.data
+
+                    sessionManager.saveTokens(loginData.accessToken, loginData.refreshToken)
                     loginProgressBar.isVisible = false
                     loginButton.isEnabled = true
-                    val fullName = state.data.fullName
-                    Toast.makeText(this, "Chào mừng, $fullName!", Toast.LENGTH_SHORT).show()
-                    // TODO: Lưu thông tin người dùng (ví dụ: state.data.id) vào SharedPreferences để sử dụng sau này.
+                    
+                    Toast.makeText(this, "Chào mừng, ${loginData.account.fullName}!", Toast.LENGTH_SHORT).show()
                     navigateToMain()
                 }
                 is UiState.Error -> {

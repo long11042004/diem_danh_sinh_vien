@@ -15,14 +15,14 @@ import androidx.fragment.app.viewModels
 import androidx.fragment.app.Fragment
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.activity.LoginActivity
-import com.microsoft.identity.client.IAccount
+import com.example.diemdanhsinhvien.manager.SessionManager
 import com.microsoft.identity.client.IPublicClientApplication
 import android.provider.MediaStore
 import com.example.diemdanhsinhvien.data.model.Account
 import android.net.Uri
 import android.content.pm.PackageManager
 import com.example.diemdanhsinhvien.common.UiState
-import com.example.diemdanhsinhvien.network.APIClient
+import com.example.diemdanhsinhvien.network.apiservice.APIClient
 import com.example.diemdanhsinhvien.repository.AccountRepository
 import com.example.diemdanhsinhvien.viewmodel.AuthViewModel
 import com.example.diemdanhsinhvien.viewmodel.AuthViewModelFactory
@@ -42,10 +42,11 @@ class AccountFragment : Fragment() {
     private lateinit var userIdTextView: TextView
     private lateinit var editAccountButton: Button
     private val EDIT_ACCOUNT_REQUEST_CODE = 124 
+    private lateinit var sessionManager: SessionManager
 
     private val authViewModel: AuthViewModel by viewModels { 
         AuthViewModelFactory(AccountRepository(
-            accountApi = APIClient.accountApi
+            accountApi = APIClient.accountApi(requireContext())
         ))
     }
 
@@ -61,6 +62,7 @@ class AccountFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d("AccountFragment", "onViewCreated called")
 
+        sessionManager = SessionManager(requireContext())
         initViews(view)
         setupObservers()
         setupClickListeners(view)
@@ -103,27 +105,25 @@ class AccountFragment : Fragment() {
         val logoutButton = view.findViewById<Button>(R.id.buttonLogout)
         logoutButton.setOnClickListener {
             Log.d("AccountFragment", "Logout button clicked.")
-            // Thử đăng xuất khỏi MSAL trước
-            mSingleAccountApp?.getCurrentAccountAsync(object : ISingleAccountPublicClientApplication.CurrentAccountCallback {
-                override fun onAccountLoaded(activeAccount: IAccount?) {
-                    if (activeAccount != null) {
-                        mSingleAccountApp?.signOut(object : ISingleAccountPublicClientApplication.SignOutCallback {
-                            override fun onSignOut() {
-                                Log.i("AccountFragment", "MSAL sign out successful.")
-                                navigateToLogin()
-                            }
-                            override fun onError(exception: MsalException) {
-                                Log.e("AccountFragment", "MSAL sign out error: $exception")
-                                navigateToLogin()
-                            }
-                        })
-                    } else {
-                        Log.i("AccountFragment", "No MSAL account found. Performing standard logout.")
-                        navigateToLogin()
-                    }
+            sessionManager.clearTokens()
+            Log.i("AccountFragment", "Custom session tokens cleared.")
+
+            if (mSingleAccountApp == null) {
+                Log.w("AccountFragment", "MSAL app not initialized. Proceeding with standard logout.")
+                navigateToLogin()
+                return@setOnClickListener
+            }
+
+            mSingleAccountApp?.signOut(object : ISingleAccountPublicClientApplication.SignOutCallback {
+                override fun onSignOut() {
+                    Log.i("AccountFragment", "MSAL sign out successful.")
+                    navigateToLogin()
                 }
-                override fun onError(exception: MsalException) { Log.e("AccountFragment", "Error getting MSAL account for logout: $exception"); navigateToLogin() }
-                override fun onAccountChanged(priorAccount: IAccount?, currentAccount: IAccount?) {}
+                override fun onError(exception: MsalException) {
+                    Log.e("AccountFragment", "MSAL sign out error: $exception")
+
+                    navigateToLogin()
+                }
             })
         }
     }

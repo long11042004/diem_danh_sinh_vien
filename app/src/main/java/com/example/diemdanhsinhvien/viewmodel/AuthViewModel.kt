@@ -9,6 +9,7 @@ import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.data.model.Account
 import com.example.diemdanhsinhvien.data.request.LoginRequest
 import com.example.diemdanhsinhvien.data.request.RegisterRequest
+import com.example.diemdanhsinhvien.data.response.ApiLoginResponse
 import com.example.diemdanhsinhvien.data.response.LoginResponse
 import com.example.diemdanhsinhvien.repository.AccountRepository
 import kotlinx.coroutines.launch
@@ -16,8 +17,8 @@ import kotlinx.coroutines.launch
 class AuthViewModel(private val accountRepository: AccountRepository) : ViewModel() {
 
     // Chức năng Đăng nhập
-    private val _loginResult = MutableLiveData<UiState<LoginResponse>>()
-    val loginResult: LiveData<UiState<LoginResponse>> = _loginResult
+    private val _loginResult = MutableLiveData<UiState<ApiLoginResponse>>()
+    val loginResult: LiveData<UiState<ApiLoginResponse>> = _loginResult
 
     fun login(loginRequest: LoginRequest) {
         viewModelScope.launch {
@@ -45,8 +46,6 @@ class AuthViewModel(private val accountRepository: AccountRepository) : ViewMode
 
     fun getAccountDetails() {
         viewModelScope.launch {
-            // Giả định rằng AccountRepository có phương thức getAccountDetails
-            // trả về Flow<UiState<Account>> để lấy thông tin từ backend của bạn.
             accountRepository.getAccountDetails().collect { state ->
                 _accountDetails.postValue(state)
             }

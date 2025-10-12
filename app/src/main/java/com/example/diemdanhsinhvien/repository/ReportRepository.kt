@@ -3,9 +3,9 @@ package com.example.diemdanhsinhvien.repository
 import android.util.Log
 import com.example.diemdanhsinhvien.data.model.Report
 import com.example.diemdanhsinhvien.common.UiState
-import com.example.diemdanhsinhvien.network.AttendanceApiService
-import com.example.diemdanhsinhvien.network.CourseApiService
-import com.example.diemdanhsinhvien.network.StudentApiService
+import com.example.diemdanhsinhvien.network.apiservice.AttendanceApiService
+import com.example.diemdanhsinhvien.network.apiservice.CourseApiService
+import com.example.diemdanhsinhvien.network.apiservice.StudentApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.async

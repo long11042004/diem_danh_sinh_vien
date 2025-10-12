@@ -1,4 +1,4 @@
-package com.example.diemdanhsinhvien.network
+package com.example.diemdanhsinhvien.network.apiservice
 
 import com.example.diemdanhsinhvien.data.model.Account
 import com.example.diemdanhsinhvien.data.request.*
@@ -36,4 +36,9 @@ interface AccountApiService {
     suspend fun deleteAccount(
         @Path("id") id: Int
     ): Response<Unit>
+
+    @POST("accounts/refreshToken")
+    suspend fun refreshToken(
+        @Header("Authorization") refreshToken: String
+    ): Response<ApiLoginResponse>
 }

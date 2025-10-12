@@ -25,7 +25,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.data.model.Report
-import com.example.diemdanhsinhvien.network.APIClient
+import com.example.diemdanhsinhvien.network.apiservice.APIClient
 import com.example.diemdanhsinhvien.repository.ReportRepository
 import com.example.diemdanhsinhvien.viewmodel.ReportViewModel
 import com.example.diemdanhsinhvien.viewmodel.ReportViewModelFactory
@@ -35,9 +35,9 @@ class ReportsFragment : Fragment() {
     private val reportViewModel: ReportViewModel by viewModels {
         ReportViewModelFactory(
             ReportRepository(
-                courseApi = APIClient.courseApi,
-                studentApi = APIClient.studentApi,
-                attendanceApi = APIClient.attendanceApi
+                courseApi = APIClient.courseApi(requireContext()),
+                studentApi = APIClient.studentApi(requireContext()),
+                attendanceApi = APIClient.attendanceApi(requireContext())
             )
         )
     }

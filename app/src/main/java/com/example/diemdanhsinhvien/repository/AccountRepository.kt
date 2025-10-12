@@ -5,8 +5,7 @@ import com.example.diemdanhsinhvien.data.model.Account
 import com.example.diemdanhsinhvien.data.request.LoginRequest
 import com.example.diemdanhsinhvien.data.request.RegisterRequest
 import com.example.diemdanhsinhvien.data.response.ApiLoginResponse
-import com.example.diemdanhsinhvien.data.response.LoginResponse
-import com.example.diemdanhsinhvien.network.AccountApiService
+import com.example.diemdanhsinhvien.network.apiservice.AccountApiService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -14,13 +13,13 @@ import kotlinx.coroutines.flow.flowOn
 
 class AccountRepository(private val accountApi: AccountApiService) {
 
-    fun login(loginRequest: LoginRequest): Flow<UiState<LoginResponse>> = flow {
+    fun login(loginRequest: LoginRequest): Flow<UiState<ApiLoginResponse>> = flow {
         emit(UiState.Loading)
         try {
             val response = accountApi.login(loginRequest)
             if (response.isSuccessful && response.body() != null) {
                 val apiResponse = response.body()!!
-                emit(UiState.Success(apiResponse.account))
+                emit(UiState.Success(apiResponse))
             } else {
                 emit(UiState.Error("Đăng nhập thất bại: ${response.message()}"))
             }

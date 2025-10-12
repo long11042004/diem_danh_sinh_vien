@@ -22,9 +22,14 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.appcompat.app.AlertDialog
 import com.example.diemdanhsinhvien.activity.StudentListActivity
 import com.example.diemdanhsinhvien.activity.MainActivity
+import com.example.diemdanhsinhvien.common.UiState
+import com.example.diemdanhsinhvien.network.apiservice.APIClient
+import com.example.diemdanhsinhvien.repository.AccountRepository
 import com.example.diemdanhsinhvien.repository.ClassRepository
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.adapter.ClassAdapter
+import com.example.diemdanhsinhvien.viewmodel.AuthViewModel
+import com.example.diemdanhsinhvien.viewmodel.AuthViewModelFactory
 import com.example.diemdanhsinhvien.viewmodel.ClassViewModel
 import com.example.diemdanhsinhvien.viewmodel.ClassViewModelFactory
 import kotlinx.coroutines.flow.combine
@@ -34,7 +39,17 @@ class HomeFragment : Fragment() {
 
     private val classViewModel: ClassViewModel by activityViewModels {
         ClassViewModelFactory(
-            ClassRepository()
+            ClassRepository(
+                courseApi = APIClient.courseApi(requireContext())
+            )
+        )
+    }
+
+    private val authViewModel: AuthViewModel by activityViewModels {
+        AuthViewModelFactory(
+            AccountRepository(
+                accountApi = APIClient.accountApi(requireContext())
+            )
         )
     }
 
@@ -53,6 +68,9 @@ class HomeFragment : Fragment() {
         val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
         val searchView = view.findViewById<SearchView>(R.id.searchViewClasses)
         val swipeRefreshLayout = view.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
+
+        val lecturerNameTextView = view.findViewById<TextView>(R.id.textViewLecturerName)
+        val lecturerIdTextView = view.findViewById<TextView>(R.id.textViewLecturerId)
         val adapter = ClassAdapter(
             onItemClicked = { classItem ->
                 val intent = Intent(activity, StudentListActivity::class.java)
@@ -100,6 +118,9 @@ class HomeFragment : Fragment() {
             }
         })
 
+        authViewModel.getAccountDetails()
+        setupAccountObserver(lecturerNameTextView, lecturerIdTextView)
+
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 combine( 
@@ -130,6 +151,38 @@ class HomeFragment : Fragment() {
                     }
                     Log.d("HomeFragment", "Filtered classes: ${filteredList.size}")
                 }.collect{}
+            }
+        }
+    }
+
+    private fun setupAccountObserver(lecturerNameTextView: TextView, lecturerIdTextView: TextView) {
+        authViewModel.accountDetails.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    lecturerNameTextView.text = getString(R.string.loading)
+                    lecturerIdTextView.text = ""
+                }
+                is UiState.Success -> {
+                    state.data?.let { account ->
+                        lecturerNameTextView.text = account.fullName
+                        lecturerIdTextView.text = getString(R.string.lecturer_id_format, account.teacherId)
+                        Log.i("HomeFragment", "Account details received: $account")
+                    } ?: run {
+                        lecturerNameTextView.text = getString(R.string.not_logged_in)
+                        lecturerIdTextView.text = ""
+                        Log.w("HomeFragment", "Account details are null.")
+                    }
+                }
+                is UiState.Error -> {
+                    lecturerNameTextView.text = getString(R.string.error_loading_data)
+                    lecturerIdTextView.text = ""
+                    Log.e("HomeFragment", "Error loading account details: ${state.message}")
+                }
+                else -> {
+                    lecturerNameTextView.text = getString(R.string.not_logged_in)
+                    lecturerIdTextView.text = ""
+                    Log.w("HomeFragment", "Observed an unhandled or null state for accountDetails in HomeFragment.")
+                }
             }
         }
     }

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.adapter.AttendanceAdapter
+import com.example.diemdanhsinhvien.network.apiservice.APIClient
 import com.example.diemdanhsinhvien.repository.ClassRepository
 import com.example.diemdanhsinhvien.repository.AttendanceRepository
 import com.example.diemdanhsinhvien.repository.StudentRepository
@@ -29,15 +30,22 @@ class AttendanceActivity : AppCompatActivity() {
 
     private val studentViewModel: StudentViewModel by viewModels {
         StudentViewModelFactory(
-            studentRepository = StudentRepository(),
-            classRepository = ClassRepository(),
+            studentRepository = StudentRepository(
+                studentApi = APIClient.studentApi(applicationContext),
+                attendanceApi = APIClient.attendanceApi(applicationContext)
+            ),
+            classRepository = ClassRepository(
+                courseApi = APIClient.courseApi(applicationContext)
+            ),
             classId = classId
         )
     }
 
     private val attendanceViewModel: AttendanceViewModel by viewModels {
         AttendanceViewModelFactory(
-            AttendanceRepository()
+            AttendanceRepository(
+                attendanceApi = APIClient.attendanceApi(applicationContext)
+            )
         )
     }
 

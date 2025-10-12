@@ -2,18 +2,21 @@ package com.example.diemdanhsinhvien.repository
 
 import com.example.diemdanhsinhvien.data.model.Student
 import com.example.diemdanhsinhvien.data.relations.StudentAttendanceHistory
-import com.example.diemdanhsinhvien.network.APIClient
+import com.example.diemdanhsinhvien.network.apiservice.AttendanceApiService
+import com.example.diemdanhsinhvien.network.apiservice.StudentApiService
 import com.example.diemdanhsinhvien.viewmodel.SortOrder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class StudentRepository {
-
+class StudentRepository(
+    private val studentApi: StudentApiService,
+    private val attendanceApi: AttendanceApiService
+) {
     fun getStudentsForClass(classId: Int, sortOrder: SortOrder): Flow<List<Student>> = flow {
         try {
             val response = when (sortOrder) {
-                SortOrder.BY_NAME -> APIClient.studentApi.getStudentsByClassSortedByName(classId)
-                SortOrder.BY_ID -> APIClient.studentApi.getStudentsByClassSortedByCode(classId)
+                SortOrder.BY_NAME -> studentApi.getStudentsByClassSortedByName(classId)
+                SortOrder.BY_ID -> studentApi.getStudentsByClassSortedByCode(classId)
             }
 
             if (response.isSuccessful) {
@@ -30,7 +33,7 @@ class StudentRepository {
 
     fun getAttendanceHistory(studentId: Int): Flow<List<StudentAttendanceHistory>> = flow {
         try {
-            val response = APIClient.attendanceApi.getAttendanceHistoryForStudent(studentId)
+            val response = attendanceApi.getAttendanceHistoryForStudent(studentId)
             if (response.isSuccessful) {
                 val historyList = response.body() ?: emptyList()
                 emit(historyList)
@@ -44,12 +47,12 @@ class StudentRepository {
     }
 
     suspend fun insertStudent(student: Student): Student? {
-        val response = APIClient.studentApi.insertStudent(student)
+        val response = studentApi.insertStudent(student)
         return if (response.isSuccessful) response.body() else null
     }
 
     suspend fun deleteStudent(student: Student): Boolean {
-        val response = APIClient.studentApi.deleteStudent(student.id)
+        val response = studentApi.deleteStudent(student.id)
         return response.isSuccessful
     }
 }

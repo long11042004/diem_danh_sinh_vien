@@ -22,8 +22,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/dark_red"
-            android:backgroundTint="@color/light_blue"
+            android:background="@color/light_blue"
             android:orientation="vertical"
             android:padding="16dp">
 
@@ -38,17 +37,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="@string/lecturer_name_placeholder"
                 android:textAppearance="?attr/textAppearanceHeadlineSmall"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:text="GV. Nguyễn Văn A" />
 
             <TextView
                 android:id="@+id/textViewLecturerId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/lecturer_id_placeholder"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textColor="?android:attr/textColorSecondary" />
+                android:textColor="?android:attr/textColorSecondary"
+                tools:text="MGV: 12345678" />
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -68,9 +67,8 @@
         android:id="@+id/textViewTodayScheduleTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginTop="24dp"
-        android:layout_marginEnd="18dp"
         android:text="@string/class_list"
         android:textAppearance="?attr/textAppearanceTitleLarge"
         app:layout_constraintStart_toStartOf="parent"

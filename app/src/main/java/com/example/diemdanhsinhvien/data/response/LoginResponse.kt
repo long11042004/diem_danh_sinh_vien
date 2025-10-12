@@ -10,5 +10,8 @@ data class LoginResponse(
     val loginName: String,
 
     @SerializedName("fullName")
-    val fullName: String
+    val fullName: String,
+
+    @SerializedName("teacherId")
+    val teacherId: String
 )

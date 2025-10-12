@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.adapter.StudentAdapter
+import com.example.diemdanhsinhvien.network.apiservice.APIClient
 import com.example.diemdanhsinhvien.repository.ClassRepository
 import com.example.diemdanhsinhvien.repository.StudentRepository
 import com.example.diemdanhsinhvien.viewmodel.SortOrder
@@ -51,8 +52,13 @@ class StudentListActivity : AppCompatActivity() {
     private var classId: Int = -1
     private val studentViewModel: StudentViewModel by viewModels {
         StudentViewModelFactory(
-            studentRepository = StudentRepository(),
-            classRepository = ClassRepository(),
+            studentRepository = StudentRepository(
+                studentApi = APIClient.studentApi(applicationContext),
+                attendanceApi = APIClient.attendanceApi(applicationContext)
+            ),
+            classRepository = ClassRepository(
+                courseApi = APIClient.courseApi(applicationContext)
+            ),
             classId = classId
         )
     }

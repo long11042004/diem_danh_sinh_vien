@@ -1,4 +1,4 @@
-package com.example.diemdanhsinhvien.network
+package com.example.diemdanhsinhvien.network.apiservice
 
 import com.example.diemdanhsinhvien.data.relations.ClassWithStudentCount
 import com.example.diemdanhsinhvien.data.model.Class

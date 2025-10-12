@@ -53,6 +53,9 @@
     <string name="attendance_rate">Tỷ lệ chuyên cần</string>
     <string name="class_list">Danh sách lớp học</string>
     <string name="start_attendance">Điểm danh</string>
+    <string name="loading">Đang tải...</string>
+    <string name="lecturer_id_format">Mã số: %1$s</string>
+    <string name="error_loading_data">Lỗi tải dữ liệu</string>
 
     <!-- Chức năng về lớp học -->
     <string name="add_class">Thêm lớp học</string>
