@@ -4,23 +4,23 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.app.Activity
+import android.content.pm.PackageManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.fragment.app.Fragment
 import com.example.diemdanhsinhvien.R
+import android.widget.ImageView
+import android.widget.Button
+import android.widget.TextView
 import com.example.diemdanhsinhvien.activity.LoginActivity
 import com.example.diemdanhsinhvien.manager.SessionManager
-import com.microsoft.identity.client.IPublicClientApplication
 import android.provider.MediaStore
 import com.example.diemdanhsinhvien.data.model.Account
 import android.net.Uri
-import android.content.pm.PackageManager
+import com.bumptech.glide.Glide
 import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.network.apiservice.APIClient
 import com.example.diemdanhsinhvien.repository.AccountRepository
@@ -28,20 +28,30 @@ import com.example.diemdanhsinhvien.viewmodel.AuthViewModel
 import com.example.diemdanhsinhvien.viewmodel.AuthViewModelFactory
 import com.example.diemdanhsinhvien.activity.EditAccountActivity
 import com.microsoft.identity.client.ISingleAccountPublicClientApplication
+import com.microsoft.identity.client.IPublicClientApplication
 import com.microsoft.identity.client.PublicClientApplication
 import java.io.IOException
 import com.microsoft.identity.client.exception.MsalException
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class AccountFragment : Fragment() {
 
+    private lateinit var ivAvatar: ImageView
+    private lateinit var tvFullName: TextView
+    private lateinit var tvLecturerId: TextView
+    private lateinit var tvDepartment: TextView
+    private lateinit var tvTitle: TextView
+    private lateinit var btnEditAccount: Button
+    private lateinit var btnLogout: Button
+    private lateinit var tvEmailValue: TextView
+    private lateinit var tvPhoneValue: TextView
+    private lateinit var tvDobValue: TextView
+    private lateinit var tvCreatedAt: TextView
+
     private var mSingleAccountApp: ISingleAccountPublicClientApplication? = null
-    private lateinit var userNameTextView: TextView
-    private lateinit var userEmailTextView: TextView
-    private lateinit var imageViewAvatar: ImageView
     private val PICK_IMAGE_REQUEST = 123
-    private lateinit var userIdTextView: TextView
-    private lateinit var editAccountButton: Button
-    private val EDIT_ACCOUNT_REQUEST_CODE = 124 
+    private val EDIT_ACCOUNT_REQUEST_CODE = 124
     private lateinit var sessionManager: SessionManager
 
     private val authViewModel: AuthViewModel by viewModels { 
@@ -54,8 +64,21 @@ class AccountFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d("AccountFragment", "onCreateView called")
-        return inflater.inflate(R.layout.fragment_account, container, false)
+        val view = inflater.inflate(R.layout.fragment_account, container, false)
+
+        ivAvatar = view.findViewById(R.id.iv_avatar)
+        tvFullName = view.findViewById(R.id.tv_full_name)
+        tvLecturerId = view.findViewById(R.id.tv_lecturer_id_value)
+        tvDepartment = view.findViewById(R.id.tv_department_value)
+        tvTitle = view.findViewById(R.id.tv_title_value)
+        btnEditAccount = view.findViewById(R.id.btn_edit_account)
+        btnLogout = view.findViewById(R.id.btn_logout)
+        tvEmailValue = view.findViewById(R.id.tv_email_value)
+        tvPhoneValue = view.findViewById(R.id.tv_phone_value)
+        tvDobValue = view.findViewById(R.id.tv_dob_value)
+        tvCreatedAt = view.findViewById(R.id.tv_created_at)
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,9 +86,8 @@ class AccountFragment : Fragment() {
         Log.d("AccountFragment", "onViewCreated called")
 
         sessionManager = SessionManager(requireContext())
-        initViews(view)
         setupObservers()
-        setupClickListeners(view)
+        setupClickListeners()
 
         authViewModel.getAccountDetails()
 
@@ -82,28 +104,20 @@ class AccountFragment : Fragment() {
             })
     }
 
-    private fun initViews(view: View) {
-        userNameTextView = view.findViewById(R.id.textViewUserName)
-        userEmailTextView = view.findViewById(R.id.textViewUserEmail)
-        imageViewAvatar = view.findViewById(R.id.imageViewAvatar)
-        userIdTextView = view.findViewById(R.id.textViewUserId)
-        editAccountButton = view.findViewById(R.id.buttonEditAccount)
-    }
-
-    private fun setupClickListeners(view: View) {
-        imageViewAvatar.setOnClickListener {
+    private fun setupClickListeners() {
+        ivAvatar.setOnClickListener {
             Log.d("AccountFragment", "Avatar clicked, launching image picker.")
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             startActivityForResult(intent, PICK_IMAGE_REQUEST)
         }
 
-        editAccountButton.setOnClickListener {
+        btnEditAccount.setOnClickListener {
             Log.d("AccountFragment", "Edit Account button clicked.")
-            val intent = Intent(requireActivity(), EditAccountActivity::class.java) 
+            val intent = Intent(requireActivity(), EditAccountActivity::class.java)
             startActivityForResult(intent, EDIT_ACCOUNT_REQUEST_CODE)
         }
-        val logoutButton = view.findViewById<Button>(R.id.buttonLogout)
-        logoutButton.setOnClickListener {
+
+        btnLogout.setOnClickListener {
             Log.d("AccountFragment", "Logout button clicked.")
             sessionManager.clearTokens()
             Log.i("AccountFragment", "Custom session tokens cleared.")
@@ -170,7 +184,7 @@ class AccountFragment : Fragment() {
                 Log.i("AccountFragment", "Image selected from gallery: $selectedImageUri")
                 try {
                     val bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, selectedImageUri)
-                    imageViewAvatar.setImageBitmap(bitmap)
+                    ivAvatar.setImageBitmap(bitmap)
                 } catch (e: IOException) {
                     Log.e("AccountFragment", "Error loading bitmap from URI.", e)
                     e.printStackTrace()
@@ -180,17 +194,44 @@ class AccountFragment : Fragment() {
     }
 
     private fun updateUiWithAccountDetails(account: Account) {
-        Log.d("AccountFragment", "Updating UI with account details: Name=${account.fullName}, Email=${account.email}, TeacherID=${account.teacherId}")
-        userNameTextView.text = account.fullName
-        userEmailTextView.text = account.email
-        userIdTextView.text = "Mã GV: ${account.teacherId}" 
+        Log.d("AccountFragment", "Updating UI with account details: $account")
+        tvFullName.text = account.fullName
+
+        tvLecturerId.text = account.teacherId
+        tvDepartment.text = account.department ?: "Chưa cập nhật"
+        tvTitle.text = account.title ?: "Chưa cập nhật"
+
+        tvEmailValue.text = account.email
+        tvPhoneValue.text = account.phoneNumber
+        tvDobValue.text = account.dateOfBirth?.let { formatDate(it) }
+
+        account.created_at?.let {
+            val formattedDate = formatDate(it)
+            tvCreatedAt.text = "${getString(R.string.created_at_label)}: $formattedDate"
+            tvCreatedAt.visibility = View.VISIBLE
+        } ?: run {
+            tvCreatedAt.visibility = View.GONE
+        }
+
+        // Sử dụng Glide để tải ảnh đại diện
+        /* Glide.with(this)
+            .load(account.avatarUrl)
+            .placeholder(R.drawable.ic_account) // Ảnh mặc định
+            .error(R.drawable.ic_account) // Ảnh khi có lỗi
+            .circleCrop() // Bo tròn ảnh
+            .into(ivAvatar) */
     }
 
     private fun updateUiAsLoggedOut() {
-        Log.d("AccountFragment", "Updating UI to logged out state.")
-        userNameTextView.text = getString(R.string.not_logged_in)
-        userEmailTextView.text = ""
-        userIdTextView.text = ""
+        tvFullName.text = getString(R.string.not_logged_in)
+        tvLecturerId.text = ""
+        tvDepartment.text = ""
+        tvTitle.text = ""
+        ivAvatar.setImageResource(R.drawable.ic_account) // Reset avatar to default
+        tvEmailValue.text = ""
+        tvPhoneValue.text = ""
+        tvDobValue.text = ""
+        tvCreatedAt.text = ""
     }
 
     private fun navigateToLogin() {
@@ -198,6 +239,33 @@ class AccountFragment : Fragment() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         requireActivity().finish()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+    }
+
+    private fun formatDate(dateString: String): String {
+        // Các định dạng ngày tháng có thể nhận từ API
+        val inputFormats = listOf(
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault()),
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()),
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        )
+        val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+        for (format in inputFormats) {
+            try {
+                val date = format.parse(dateString)
+                if (date != null) {
+                    return outputFormat.format(date)
+                }
+            } catch (e: Exception) {
+                // Bỏ qua và thử định dạng tiếp theo
+            }
+        }
+        Log.w("AccountFragment", "Không thể phân tích ngày: $dateString. Trả về chuỗi gốc.")
+        return dateString // Trả về chuỗi gốc nếu không thể phân tích
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

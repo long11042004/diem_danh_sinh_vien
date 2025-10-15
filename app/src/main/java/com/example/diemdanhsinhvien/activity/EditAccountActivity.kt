@@ -1,137 +1,260 @@
 package com.example.diemdanhsinhvien.activity
 
+import android.app.Activity
+import android.app.DatePickerDialog
 import android.os.Bundle
-import android.widget.Button
-import android.widget.Toast
-import android.content.Intent
-import android.widget.Spinner
-import android.widget.ArrayAdapter
-import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.appbar.MaterialToolbar
 import android.util.Patterns
+import android.util.Log
+import android.view.MenuItem
+import android.view.View
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.example.diemdanhsinhvien.R
+import com.example.diemdanhsinhvien.common.UiState
+import com.example.diemdanhsinhvien.data.model.Account
+import com.example.diemdanhsinhvien.network.apiservice.APIClient
+import com.example.diemdanhsinhvien.repository.AccountRepository
+import com.example.diemdanhsinhvien.viewmodel.AuthViewModel
+import com.example.diemdanhsinhvien.viewmodel.AuthViewModelFactory
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class EditAccountActivity : AppCompatActivity() {
 
-    private lateinit var editTextDisplayName: TextInputEditText
-    private lateinit var editTextEmail: TextInputEditText
-    private lateinit var editTextLecturerId: TextInputEditText
-    private lateinit var editTextDepartment: TextInputEditText
-    private lateinit var editTextTitle: TextInputEditText
-    private lateinit var editTextPhoneNumber: TextInputEditText
-    private lateinit var spinnerStatus: Spinner
-    private lateinit var buttonSave: Button
+    // Views
+    private lateinit var toolbar: MaterialToolbar
+    private lateinit var avatarImageView: ImageView
+    private lateinit var fullNameEditText: TextInputEditText
+    private lateinit var departmentEditText: TextInputEditText
+    private lateinit var titleEditText: TextInputEditText
+    private lateinit var phoneNumberEditText: TextInputEditText
+    private lateinit var emailEditText: TextInputEditText
+    private lateinit var dobEditText: TextInputEditText
+    private lateinit var dobInputLayout: TextInputLayout
+    private lateinit var saveButton: Button
+    private lateinit var progressBar: ProgressBar
 
-    private val statusOptions = arrayOf("Active", "Inactive")
-
-    companion object {
-        const val EXTRA_DISPLAY_NAME = "displayName"
-        const val EXTRA_EMAIL = "email"
-        const val EXTRA_LECTURER_ID = "lecturerId"
-        const val EXTRA_DEPARTMENT = "department"
-        const val EXTRA_TITLE = "title"
-        const val EXTRA_PHONE_NUMBER = "phoneNumber"
-        const val EXTRA_STATUS = "status"
+    private val authViewModel: AuthViewModel by viewModels {
+        AuthViewModelFactory(AccountRepository(APIClient.accountApi(this)))
     }
+
+    private var currentAccount: Account? = null
+    private val calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_account)
 
-        val toolbar: MaterialToolbar = findViewById(R.id.toolbarEditAccount)
-        toolbar.setNavigationOnClickListener {
-            finish()
-        }
+        initViews()
 
-        editTextDisplayName = findViewById(R.id.editTextDisplayName)
-        editTextEmail = findViewById(R.id.editTextEmail)
-        editTextLecturerId = findViewById(R.id.editTextLecturerId)
-        editTextDepartment = findViewById(R.id.editTextDepartment)
-        editTextTitle = findViewById(R.id.editTextTitle)
-        editTextPhoneNumber = findViewById(R.id.editTextPhoneNumber)
-        spinnerStatus = findViewById(R.id.spinnerStatus)
-        buttonSave = findViewById(R.id.buttonSave)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        setupSpinner()
-        loadCurrentUser()
+        setupObservers()
+        setupClickListeners()
 
-        buttonSave.setOnClickListener {
+        authViewModel.getAccountDetails()
+    }
+
+    private fun initViews() {
+        toolbar = findViewById(R.id.toolbarEditAccount)
+        avatarImageView = findViewById(R.id.iv_edit_avatar)
+        fullNameEditText = findViewById(R.id.editTextFullName)
+        departmentEditText = findViewById(R.id.editTextDepartment)
+        titleEditText = findViewById(R.id.editTextTitle)
+        phoneNumberEditText = findViewById(R.id.editTextPhoneNumber)
+        emailEditText = findViewById(R.id.editTextEmail)
+        dobEditText = findViewById(R.id.editTextDob)
+        dobInputLayout = findViewById(R.id.textInputDob)
+        saveButton = findViewById(R.id.buttonSave)
+        progressBar = findViewById(R.id.progressBarEdit)
+    }
+
+    private fun setupClickListeners() {
+        saveButton.setOnClickListener {
             saveChanges()
         }
-    }
 
-    private fun setupSpinner() {
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, statusOptions)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerStatus.adapter = adapter
-    }
-
-    private fun loadCurrentUser() {
-        val intentExtras = intent.extras
-        if (intentExtras != null) {
-            val displayName = intentExtras.getString(EXTRA_DISPLAY_NAME, "")
-            val email = intentExtras.getString(EXTRA_EMAIL, "")
-            val lecturerId = intentExtras.getString(EXTRA_LECTURER_ID, "")
-            val department = intentExtras.getString(EXTRA_DEPARTMENT, "")
-            val title = intentExtras.getString(EXTRA_TITLE, "")
-            val phoneNumber = intentExtras.getString(EXTRA_PHONE_NUMBER, "")
-            val status = intentExtras.getString(EXTRA_STATUS, "Active")
-
-            editTextDisplayName.setText(displayName)
-            editTextEmail.setText(email)
-            editTextLecturerId.setText(lecturerId)
-            editTextDepartment.setText(department)
-            editTextTitle.setText(title)
-            editTextPhoneNumber.setText(phoneNumber)
-
-            val statusPosition = statusOptions.indexOf(status).coerceAtLeast(0)
-            spinnerStatus.setSelection(statusPosition)
+        dobEditText.setOnClickListener {
+            showDatePickerDialog()
         }
+        dobInputLayout.setEndIconOnClickListener {
+            showDatePickerDialog()
+        }
+
+        avatarImageView.setOnClickListener {
+            Toast.makeText(this, "Chức năng thay đổi ảnh đại diện đang được phát triển", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setupObservers() {
+        // Lắng nghe kết quả tải dữ liệu ban đầu
+        authViewModel.accountDetails.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    progressBar.visibility = View.VISIBLE
+                    saveButton.isEnabled = false
+                }
+                is UiState.Success -> {
+                    progressBar.visibility = View.GONE
+                    saveButton.isEnabled = true
+                    state.data?.let {
+                        currentAccount = it
+                        populateData(it)
+                    }
+                }
+                is UiState.Error -> {
+                    progressBar.visibility = View.GONE
+                    saveButton.isEnabled = true
+                    Toast.makeText(this, "Lỗi tải dữ liệu: ${state.message}", Toast.LENGTH_LONG).show()
+                }
+                else -> {}
+            }
+        }
+
+        // Lắng nghe kết quả của việc cập nhật
+        authViewModel.updateState.observe(this) { state -> // Giả định có updateState trong ViewModel
+            when (state) {
+                is UiState.Loading -> {
+                    progressBar.visibility = View.VISIBLE
+                    saveButton.isEnabled = false
+                }
+                is UiState.Success -> {
+                    progressBar.visibility = View.GONE
+                    Toast.makeText(this, "Cập nhật thông tin thành công!", Toast.LENGTH_LONG).show()
+                    // Báo kết quả thành công về cho AccountFragment và đóng màn hình
+                    setResult(Activity.RESULT_OK)
+                    finish()
+                }
+                is UiState.Error -> {
+                    progressBar.visibility = View.GONE
+                    saveButton.isEnabled = true
+                    Toast.makeText(this, "Cập nhật thất bại: ${state.message}", Toast.LENGTH_LONG).show()
+                }
+                else -> {}
+            }
+        }
+    }
+
+    private fun populateData(account: Account) {
+        fullNameEditText.setText(account.fullName)
+        departmentEditText.setText(account.department)
+        titleEditText.setText(account.title)
+        phoneNumberEditText.setText(account.phoneNumber)
+        emailEditText.setText(account.email)
+
+        // Định dạng và hiển thị ngày sinh
+        account.dateOfBirth?.let {
+            dobEditText.setText(formatDateForDisplay(it))
+            try {
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val date = inputFormat.parse(it)
+                if (date != null) {
+                    calendar.time = date
+                }
+                else {}
+            } catch (e: Exception) {
+                Log.e("EditAccountActivity", "Lỗi parse ngày sinh: $it")
+            }
+        }
+
+        /* Glide.with(this)
+            .load(account.avatarUrl)
+            .placeholder(R.drawable.ic_account)
+            .error(R.drawable.ic_account)
+            .circleCrop()
+            .into(avatarImageView) */
     }
 
     private fun saveChanges() {
-        val displayName = editTextDisplayName.text.toString().trim()
-        val email = editTextEmail.text.toString().trim()
-        val phoneNumber = editTextPhoneNumber.text.toString().trim()
-        val selectedStatus = spinnerStatus.selectedItem.toString()
-
-        if (displayName.isEmpty()) {
-            editTextDisplayName.error = "Vui lòng nhập tên hiển thị"
-            editTextDisplayName.requestFocus()
+        val localCurrentAccount = currentAccount ?: run {
+            Toast.makeText(this, "Dữ liệu người dùng chưa sẵn sàng, vui lòng thử lại.", Toast.LENGTH_SHORT).show()
             return
         }
 
+        val fullName = fullNameEditText.text.toString().trim()
+        if (fullName.isEmpty()) {
+            fullNameEditText.error = getString(R.string.error_enter_full_name)
+            return
+        }
+
+        val email = emailEditText.text.toString().trim()
         if (email.isEmpty()) {
-            editTextEmail.error = "Vui lòng nhập email"
-            editTextEmail.requestFocus()
+            emailEditText.error = getString(R.string.error_enter_email)
             return
         }
-
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            editTextEmail.error = "Vui lòng nhập địa chỉ email hợp lệ"
-            editTextEmail.requestFocus()
+            emailEditText.error = getString(R.string.error_invalid_email)
             return
         }
 
-        if (phoneNumber.isEmpty() || !Patterns.PHONE.matcher(phoneNumber).matches()) {
-            editTextPhoneNumber.error = "Vui lòng nhập số điện thoại hợp lệ"
-            editTextPhoneNumber.requestFocus()
-            return
+
+        val updatedAccount = localCurrentAccount.copy(
+            fullName = fullName,
+            email = email,
+            department = departmentEditText.text.toString().trim(),
+            title = titleEditText.text.toString().trim(),
+            phoneNumber = phoneNumberEditText.text.toString().trim(),
+            dateOfBirth = if (dobEditText.text.toString().isNotEmpty()) {
+                formatDateForApi(calendar.time)
+            } else {
+                ""
+            }
+        )
+
+        authViewModel.updateAccount(updatedAccount.id, updatedAccount)
+    }
+
+    private fun showDatePickerDialog() {
+        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+            calendar.set(Calendar.YEAR, year)
+            calendar.set(Calendar.MONTH, month)
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+            val displayFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            dobEditText.setText(displayFormat.format(calendar.time))
         }
 
-        val resultIntent = Intent()
-        resultIntent.putExtra(EXTRA_DISPLAY_NAME, displayName)
-        resultIntent.putExtra(EXTRA_EMAIL, email)
-        resultIntent.putExtra(EXTRA_LECTURER_ID, editTextLecturerId.text.toString())
-        resultIntent.putExtra(EXTRA_DEPARTMENT, editTextDepartment.text.toString())
-        resultIntent.putExtra(EXTRA_TITLE, editTextTitle.text.toString())
-        resultIntent.putExtra(EXTRA_PHONE_NUMBER, phoneNumber)
-        resultIntent.putExtra(EXTRA_STATUS, selectedStatus)
+        DatePickerDialog(
+            this,
+            dateSetListener,
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).show()
+    }
 
-        setResult(RESULT_OK, resultIntent)
+    private fun formatDateForDisplay(dateString: String): String {
+        return try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val date = inputFormat.parse(dateString)
+            if (date != null) outputFormat.format(date) else ""
+        } catch (e: Exception) {
+            dateString // Trả về chuỗi gốc nếu không parse được
+        }
+    }
 
-        Toast.makeText(this, "Đã lưu thay đổi.", Toast.LENGTH_SHORT).show()
-        finish()
+    private fun formatDateForApi(date: Date): String {
+        val apiFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return apiFormat.format(date)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

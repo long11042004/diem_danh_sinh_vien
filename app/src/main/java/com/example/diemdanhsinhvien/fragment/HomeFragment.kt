@@ -32,6 +32,7 @@ import com.example.diemdanhsinhvien.viewmodel.AuthViewModel
 import com.example.diemdanhsinhvien.viewmodel.AuthViewModelFactory
 import com.example.diemdanhsinhvien.viewmodel.ClassViewModel
 import com.example.diemdanhsinhvien.viewmodel.ClassViewModelFactory
+import java.util.Calendar
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
@@ -71,6 +72,10 @@ class HomeFragment : Fragment() {
 
         val lecturerNameTextView = view.findViewById<TextView>(R.id.textViewLecturerName)
         val lecturerIdTextView = view.findViewById<TextView>(R.id.textViewLecturerId)
+        val greetingTextView = view.findViewById<TextView>(R.id.textViewGreeting)
+
+        greetingTextView.text = getGreetingMessage()
+
         val adapter = ClassAdapter(
             onItemClicked = { classItem ->
                 val intent = Intent(activity, StudentListActivity::class.java)
@@ -180,6 +185,15 @@ class HomeFragment : Fragment() {
                     Log.w("HomeFragment", "Observed an unhandled or null state for accountDetails in HomeFragment.")
                 }
             }
+        }
+    }
+
+    private fun getGreetingMessage(): String {
+        val calendar = Calendar.getInstance()
+        return when (calendar.get(Calendar.HOUR_OF_DAY)) {
+            in 0..11 -> getString(R.string.greeting_morning)    // Từ 00:00 đến 11:59
+            in 12..17 -> getString(R.string.greeting_afternoon) // Từ 12:00 đến 17:59
+            else -> getString(R.string.greeting_evening)        // Từ 18:00 đến 23:59
         }
     }
 

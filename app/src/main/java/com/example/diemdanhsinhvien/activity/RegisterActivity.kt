@@ -96,7 +96,6 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun validateAndRegister(): Boolean {
         val fullNameLayout = findViewById<TextInputLayout>(R.id.fullNameTextInputLayout)
-        val schoolLayout = findViewById<TextInputLayout>(R.id.schoolTextInputLayout)
         val usernameLayout = findViewById<TextInputLayout>(R.id.usernameTextInputLayout)
         val departmentLayout = findViewById<TextInputLayout>(R.id.departmentTextInputLayout)
         val titleLayout = findViewById<TextInputLayout>(R.id.titleTextInputLayout)
@@ -106,7 +105,6 @@ class RegisterActivity : AppCompatActivity() {
         
         val fullName = fullNameLayout.editText?.text.toString().trim()
         val username = usernameLayout.editText?.text.toString().trim()
-        val school = schoolLayout.editText?.text.toString().trim()
 
         val department = departmentLayout.editText?.text.toString().trim()
         val title = titleLayout.editText?.text.toString().trim()
@@ -118,7 +116,6 @@ class RegisterActivity : AppCompatActivity() {
         var isFormValid = true
         
         fullNameLayout.error = null
-        schoolLayout.error = null
       
         phoneLayout.error = null
         dobLayout.error = null
@@ -131,11 +128,6 @@ class RegisterActivity : AppCompatActivity() {
 
         if (username.isEmpty()) {
             usernameLayout.error = getString(R.string.error_enter_username)
-            isFormValid = false
-        }
-
-        if (school.isEmpty()) {
-            schoolLayout.error = getString(R.string.error_enter_school)
             isFormValid = false
         }
 

@@ -9,6 +9,7 @@ import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.data.model.Account
 import com.example.diemdanhsinhvien.data.request.LoginRequest
 import com.example.diemdanhsinhvien.data.request.RegisterRequest
+import com.example.diemdanhsinhvien.data.request.UpdateAccountRequest
 import com.example.diemdanhsinhvien.data.response.ApiLoginResponse
 import com.example.diemdanhsinhvien.data.response.LoginResponse
 import com.example.diemdanhsinhvien.repository.AccountRepository
@@ -51,6 +52,18 @@ class AuthViewModel(private val accountRepository: AccountRepository) : ViewMode
             }
         }
     }
+
+    private val _updateState = MutableLiveData<UiState<Unit>>()
+    val updateState: LiveData<UiState<Unit>> = _updateState
+
+    fun updateAccount(id: Int, account: Account) {
+        viewModelScope.launch {
+            accountRepository.updateAccount(id, account).collect { state ->
+                _updateState.postValue(state)
+            }
+        }
+    }
+
 }
 
 class AuthViewModelFactory(private val repository: AccountRepository) : ViewModelProvider.Factory {

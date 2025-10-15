@@ -56,6 +56,8 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.androidx.benchmark.common)
 
+    implementation(libs.glide)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

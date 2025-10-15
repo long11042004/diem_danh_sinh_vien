@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.data.model.Account
 import com.example.diemdanhsinhvien.data.request.LoginRequest
+import com.example.diemdanhsinhvien.data.request.UpdateAccountRequest
 import com.example.diemdanhsinhvien.data.request.RegisterRequest
 import com.example.diemdanhsinhvien.data.response.ApiLoginResponse
 import com.example.diemdanhsinhvien.network.apiservice.AccountApiService
@@ -58,6 +59,28 @@ class AccountRepository(private val accountApi: AccountApiService) {
                 Log.i("AccountRepository", "Lỗi ${response.code()}: ${response.message()}")
             }
         } catch (e: Exception) {
+            emit(UiState.Error(e.localizedMessage ?: "Đã có lỗi không xác định xảy ra"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+    fun updateAccount(id: Int, account: Account): Flow<UiState<Unit>> = flow {
+        emit(UiState.Loading)
+        try {
+            val response = accountApi.update(id, account)
+            if (response.isSuccessful) {
+                emit(UiState.Success(Unit))
+            } else {
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (!errorBody.isNullOrEmpty()) {
+                    errorBody
+                } else {
+                    "Lỗi ${response.code()}: ${response.message()}"
+                }
+                emit(UiState.Error(errorMessage))
+                Log.e("AccountRepository", "Lỗi cập nhật tài khoản: $errorMessage")
+            }
+        } catch (e: Exception) {
+            Log.e("AccountRepository", "Ngoại lệ khi cập nhật tài khoản", e)
             emit(UiState.Error(e.localizedMessage ?: "Đã có lỗi không xác định xảy ra"))
         }
     }.flowOn(Dispatchers.IO)

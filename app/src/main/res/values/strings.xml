@@ -46,6 +46,9 @@
     <string name="title_reports">Thống kê</string>
     <string name="title_account">Tài khoản</string>
     <string name="welcome_back">Chào mừng trở lại,</string>
+    <string name="greeting_morning">Chào buổi sáng,</string>
+    <string name="greeting_afternoon">Chào buổi chiều,</string>
+    <string name="greeting_evening">Chào buổi tối,</string>
     <string name="student_id_placeholder">MSSV: 20181234</string>
     <string name="student_name_placeholder">Nguyễn Văn A</string>
     <string name="lecturer_name_placeholder">GV. Nguyễn Văn A</string>
@@ -132,6 +135,10 @@
     <string name="save_button">Lưu</string>
     <string name="edit_avatar">Chỉnh sửa ảnh đại diện</string>
     <string name="lecturer_id">Mã GV</string>
+    <string name="lecturer_id_label_display">Mã GV: %1$s</string>
     <string name="department">Khoa</string>
+    <string name="department_label_display">Khoa: %1$s</string>
     <string name="title">Chức danh</string>
+    <string name="title_label_display">Chức danh: %1$s</string>
+    <string name="created_at_label">Ngày tạo</string>
 </resources>
