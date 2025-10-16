@@ -1,13 +1,17 @@
 package com.example.diemdanhsinhvien.activity
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.example.diemdanhsinhvien.R
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -16,11 +20,20 @@ import com.google.android.material.textfield.TextInputLayout
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
-import java.util.UUID
+import com.example.diemdanhsinhvien.common.UiState
+import com.example.diemdanhsinhvien.data.request.RegisterRequest
+import com.example.diemdanhsinhvien.network.apiservice.APIClient
+import com.example.diemdanhsinhvien.repository.AccountRepository
+import com.example.diemdanhsinhvien.viewmodel.AuthViewModel
+import com.example.diemdanhsinhvien.viewmodel.AuthViewModelFactory
 
 class RegisterActivity : AppCompatActivity() {
 
     private val CONFIRM_PASSWORD_REQUEST_CODE = 123
+    private val authViewModel: AuthViewModel by viewModels {
+        AuthViewModelFactory(AccountRepository(APIClient.accountApi(applicationContext)))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.register_activity)
@@ -37,11 +50,10 @@ class RegisterActivity : AppCompatActivity() {
 
         val registerButton = findViewById<Button>(R.id.registerButton)
         registerButton.setOnClickListener {
-            if (validateAndRegister()) {
-                val intent = Intent(this, ConfirmPasswordActivity::class.java)
-                startActivityForResult(intent, CONFIRM_PASSWORD_REQUEST_CODE)
-            }
+            validateAndRegister()
         }
+
+        observeViewModel()
 
         val loginNowTextView = findViewById<TextView>(R.id.textViewLoginNow)
         loginNowTextView.setOnClickListener {
@@ -54,21 +66,71 @@ class RegisterActivity : AppCompatActivity() {
         if (requestCode == CONFIRM_PASSWORD_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val password = data?.getStringExtra("password")
             if (password != null) {
-                val fullName = intent.getStringExtra("fullName")
-                val username = intent.getStringExtra("username")
-                val school = intent.getStringExtra("school")
-                val phone = intent.getStringExtra("phone")
-                val dob = intent.getStringExtra("dob")
-                val email = intent.getStringExtra("email")
-                val department = intent.getStringExtra("department")
-                val title = intent.getStringExtra("title")
+                val fullName = findViewById<TextInputLayout>(R.id.fullNameTextInputLayout).editText?.text.toString().trim()
+                val loginName = findViewById<TextInputLayout>(R.id.usernameTextInputLayout).editText?.text.toString().trim()
+                val department = findViewById<TextInputLayout>(R.id.departmentTextInputLayout).editText?.text.toString().trim()
+                val title = findViewById<TextInputLayout>(R.id.titleTextInputLayout).editText?.text.toString().trim()
+                val phoneNumber = findViewById<TextInputLayout>(R.id.phoneNumberTextInputLayout).editText?.text.toString().trim()
+                val dateOfBirthDisplay = findViewById<TextInputLayout>(R.id.dobTextInputLayout).editText?.text.toString().trim()
+                val email = findViewById<TextInputLayout>(R.id.emailTextInputLayout).editText?.text.toString().trim()
 
-                Toast.makeText(this, "Đăng ký và đăng nhập thành công!", Toast.LENGTH_SHORT).show()
+                val dateOfBirthApi = try {
+                    val displayFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                    val apiFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val date = displayFormat.parse(dateOfBirthDisplay)
+                    date?.let { apiFormat.format(it) } ?: ""
+                } catch (e: Exception) {
+                    "" // Xử lý lỗi nếu định dạng không đúng
+                }
 
-                val intent = Intent(this, MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
+                val registerRequest = RegisterRequest(
+                    fullName = fullName,
+                    loginName = loginName,
+                    password = password,
+                    department = department,
+                    title = title,
+                    phoneNumber = phoneNumber,
+                    dateOfBirth = dateOfBirthApi,
+                    email = email
+                )
+                authViewModel.register(registerRequest)
+            }
+        }
+    }
+
+    private fun observeViewModel() {
+        val registerProgressBar = findViewById<ProgressBar>(R.id.registerProgressBar)
+        val registerButton = findViewById<Button>(R.id.registerButton)
+
+        authViewModel.registerResult.observe(this) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    registerProgressBar.isVisible = true
+                    registerButton.isEnabled = false
+                }
+                is UiState.Success -> {
+                    registerProgressBar.isVisible = false
+                    registerButton.isEnabled = true
+                    Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show()
+
+                    val intent = Intent(this, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                }
+                is UiState.Error -> {
+                    registerProgressBar.isVisible = false
+                    registerButton.isEnabled = true
+                    AlertDialog.Builder(this)
+                        .setTitle("Lỗi đăng ký")
+                        .setMessage(state.message)
+                        .setPositiveButton("OK", null)
+                        .show()
+                }
+                else -> {
+                    registerProgressBar.isVisible = false
+                    registerButton.isEnabled = true
+                }
             }
         }
     }
@@ -89,12 +151,7 @@ class RegisterActivity : AppCompatActivity() {
         datePicker.show(supportFragmentManager, "DATE_PICKER")
     }
 
-    private fun generateTeacherId(): String {
-        val uuid = UUID.randomUUID().toString().substring(0, 8).uppercase()
-        return "GV$uuid"
-    }
-
-    private fun validateAndRegister(): Boolean {
+    private fun validateAndRegister() {
         val fullNameLayout = findViewById<TextInputLayout>(R.id.fullNameTextInputLayout)
         val usernameLayout = findViewById<TextInputLayout>(R.id.usernameTextInputLayout)
         val departmentLayout = findViewById<TextInputLayout>(R.id.departmentTextInputLayout)
@@ -154,6 +211,9 @@ class RegisterActivity : AppCompatActivity() {
                 isFormValid = false
         }
 
-        return isFormValid
+        if (isFormValid) {
+            val intent = Intent(this, ConfirmPasswordActivity::class.java)
+            startActivityForResult(intent, CONFIRM_PASSWORD_REQUEST_CODE)
+        }
     }
 }

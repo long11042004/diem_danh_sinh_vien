@@ -241,7 +241,7 @@ class EditAccountActivity : AppCompatActivity() {
             val date = inputFormat.parse(dateString)
             if (date != null) outputFormat.format(date) else ""
         } catch (e: Exception) {
-            dateString // Trả về chuỗi gốc nếu không parse được
+            dateString
         }
     }
 

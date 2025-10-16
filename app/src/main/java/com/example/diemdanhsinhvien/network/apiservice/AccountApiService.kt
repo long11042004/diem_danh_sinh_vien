@@ -9,7 +9,7 @@ import retrofit2.http.*
 interface AccountApiService {
 
     @POST("accounts/register")
-    suspend fun registerTeacher(
+    suspend fun register(
         @Body request: RegisterRequest
     ): Response<Unit>
 

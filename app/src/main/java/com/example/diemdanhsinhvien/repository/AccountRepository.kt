@@ -33,7 +33,7 @@ class AccountRepository(private val accountApi: AccountApiService) {
     fun register(registerRequest: RegisterRequest): Flow<UiState<Unit>> = flow {
         emit(UiState.Loading)
         try {
-            val response = accountApi.registerTeacher(registerRequest)
+            val response = accountApi.register(registerRequest)
             if (response.isSuccessful) {
                 emit(UiState.Success(Unit))
             } else {
