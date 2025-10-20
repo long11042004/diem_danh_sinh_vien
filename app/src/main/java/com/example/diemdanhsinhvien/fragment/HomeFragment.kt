@@ -171,6 +171,9 @@ class HomeFragment : Fragment() {
                     state.data?.let { account ->
                         lecturerNameTextView.text = account.fullName
                         lecturerIdTextView.text = getString(R.string.lecturer_id_format, account.teacherId)
+
+                        classViewModel.setTeacherId(account.id)
+
                         Log.i("HomeFragment", "Details: $account")
                     }
                 }

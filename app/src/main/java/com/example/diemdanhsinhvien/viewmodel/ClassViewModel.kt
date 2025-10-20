@@ -14,17 +14,22 @@ import kotlinx.coroutines.launch
 class ClassViewModel(private val classRepository: ClassRepository) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
-    private val _refreshTrigger = MutableStateFlow(0)
+    private val _refreshTrigger = MutableSharedFlow<Unit>(replay = 0)
+    private val _teacherId = MutableStateFlow<Int?>(null)
+
+    private val trigger = combine(_teacherId, _refreshTrigger.onStart { emit(Unit) }) { id, _ -> id }
 
     private val _classesUiState: StateFlow<UiState<List<ClassWithStudentCount>>> =
-        _refreshTrigger.flatMapLatest {
-            classRepository.getClassesWithStudentCount().onEach { uiState ->
-                Log.d("ClassViewModel", "New UI State received: $uiState")
+        trigger.flatMapLatest { teacherId ->
+            if (teacherId == null) {
+                flowOf(UiState.Success(emptyList()))
+            } else {
+                classRepository.getClassesWithStudentCount(teacherId)
             }
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = UiState.Loading
+            initialValue = UiState.Loading // Trạng thái ban đầu là Loading
         )
 
     private val allClasses: Flow<List<ClassWithStudentCount>> = _classesUiState.map {
@@ -69,8 +74,14 @@ class ClassViewModel(private val classRepository: ClassRepository) : ViewModel()
         _searchQuery.value = query
     }
 
+    fun setTeacherId(teacherId: Int) {
+        _teacherId.value = teacherId
+    }
+
     fun refreshClasses() {
-        _refreshTrigger.value++
+        viewModelScope.launch {
+            _refreshTrigger.emit(Unit)
+        }
     }
 
     fun insertClass(classData: Course) = viewModelScope.launch { classRepository.insertClass(classData) }

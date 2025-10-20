@@ -1,12 +1,14 @@
 package com.example.diemdanhsinhvien.activity
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.diemdanhsinhvien.R
@@ -21,6 +23,9 @@ class OtpActivity : AppCompatActivity() {
     private lateinit var otpDigit5: EditText
     private lateinit var otpDigit6: EditText
     private lateinit var verifyOtpButton: Button
+    private lateinit var resendOtpTextView: TextView
+    private lateinit var countdownTextView: TextView
+    private var countDownTimer: CountDownTimer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,16 +44,47 @@ class OtpActivity : AppCompatActivity() {
         otpDigit6 = findViewById(R.id.otpDigit6)
         verifyOtpButton = findViewById(R.id.verifyOtpButton)
 
+        resendOtpTextView = findViewById(R.id.resendOtpTextView)
+        countdownTextView = findViewById(R.id.countdownTextView)
+
         setupOtpListeners()
 
         verifyOtpButton.setOnClickListener {
             val otp = getOtpCode()
             if (otp.length == 6) {
                 Toast.makeText(this, "Mã OTP đã nhập: $otp", Toast.LENGTH_SHORT).show()
+                // TODO: Gửi OTP đến backend để xác thực
             } else {
                 Toast.makeText(this, "Vui lòng nhập đủ 6 chữ số OTP", Toast.LENGTH_SHORT).show()
             }
         }
+
+        resendOtpTextView.setOnClickListener {
+            // TODO: Thêm logic gọi API để gửi lại mã OTP
+            Toast.makeText(this, "Đang gửi lại mã OTP...", Toast.LENGTH_SHORT).show()
+            startCountdownTimer()
+        }
+
+        startCountdownTimer()
+    }
+
+    private fun startCountdownTimer() {
+        resendOtpTextView.visibility = View.GONE
+        countdownTextView.visibility = View.VISIBLE
+
+        countDownTimer?.cancel()
+
+        countDownTimer = object : CountDownTimer(60000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val secondsLeft = millisUntilFinished / 1000
+                countdownTextView.text = getString(R.string.resend_code_in, secondsLeft)
+            }
+
+            override fun onFinish() {
+                countdownTextView.visibility = View.GONE
+                resendOtpTextView.visibility = View.VISIBLE
+            }
+        }.start()
     }
 
     private fun setupOtpListeners() {
@@ -79,7 +115,6 @@ class OtpActivity : AppCompatActivity() {
                 if (keyCode == KeyEvent.KEYCODE_DEL && event.action == KeyEvent.ACTION_DOWN) {
                     if (currentEditText.text.isEmpty() && previousEditText != null) {
                         previousEditText.requestFocus()
-                        previousEditText.setText("")
                         return@OnKeyListener true
                     }
                 }
@@ -90,5 +125,10 @@ class OtpActivity : AppCompatActivity() {
 
     private fun getOtpCode(): String {
         return "${otpDigit1.text}${otpDigit2.text}${otpDigit3.text}${otpDigit4.text}${otpDigit5.text}${otpDigit6.text}"
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        countDownTimer?.cancel() // Rất quan trọng để tránh rò rỉ bộ nhớ
     }
 }

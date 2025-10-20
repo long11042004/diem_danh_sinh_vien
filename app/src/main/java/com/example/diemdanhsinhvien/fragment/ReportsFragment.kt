@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.ProgressBar
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -24,9 +25,13 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.example.diemdanhsinhvien.common.UiState
+import com.example.diemdanhsinhvien.data.model.Account
 import com.example.diemdanhsinhvien.data.model.Report
 import com.example.diemdanhsinhvien.network.apiservice.APIClient
+import com.example.diemdanhsinhvien.repository.AccountRepository
 import com.example.diemdanhsinhvien.repository.ReportRepository
+import com.example.diemdanhsinhvien.viewmodel.AuthViewModel
+import com.example.diemdanhsinhvien.viewmodel.AuthViewModelFactory
 import com.example.diemdanhsinhvien.viewmodel.ReportViewModel
 import com.example.diemdanhsinhvien.viewmodel.ReportViewModelFactory
 
@@ -38,6 +43,14 @@ class ReportsFragment : Fragment() {
                 courseApi = APIClient.courseApi(requireContext()),
                 studentApi = APIClient.studentApi(requireContext()),
                 attendanceApi = APIClient.attendanceApi(requireContext())
+            )
+        )
+    }
+
+    private val authViewModel: AuthViewModel by viewModels {
+        AuthViewModelFactory(
+            AccountRepository(
+                accountApi = APIClient.accountApi(requireContext())
             )
         )
     }
@@ -57,6 +70,7 @@ class ReportsFragment : Fragment() {
         val textViewNoReports = view.findViewById<TextView>(R.id.textViewNoReports)
         val barChart = view.findViewById<BarChart>(R.id.barChartAttendance)
         val progressBar = view.findViewById<ProgressBar>(R.id.progressBarReports)
+        val swipeRefreshLayout = view.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayoutReports)
 
         val adapter = ReportAdapter { report ->
             exportReport(report)
@@ -65,17 +79,41 @@ class ReportsFragment : Fragment() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
 
+        swipeRefreshLayout.setOnRefreshListener {
+            Log.d("ReportsFragment", "Swipe to refresh triggered.")
+            authViewModel.getAccountDetails() // Tải lại chi tiết tài khoản để kích hoạt tải báo cáo
+        }
+
+        setupObservers(recyclerView, textViewNoReports, barChart, progressBar, adapter, swipeRefreshLayout)
+
+        authViewModel.getAccountDetails()
+    }
+
+    private fun setupObservers(
+        recyclerView: RecyclerView,
+        textViewNoReports: TextView,
+        barChart: BarChart,
+        progressBar: ProgressBar,
+        adapter: ReportAdapter,
+        swipeRefreshLayout: SwipeRefreshLayout
+    ) {
+        // Lắng nghe thay đổi từ ReportViewModel
         reportViewModel.reports.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
                     Log.d("ReportsFragment", "Đang tải báo cáo...")
-                    progressBar.isVisible = true
-                    recyclerView.isVisible = false
-                    textViewNoReports.isVisible = false
+                    // Chỉ hiển thị ProgressBar ở giữa khi tải lần đầu
+                    if (adapter.currentList.isEmpty()) {
+                        progressBar.isVisible = true
+                        recyclerView.isVisible = false
+                        textViewNoReports.isVisible = false
+                        barChart.isVisible = false
+                    }
                 }
                 is UiState.Success -> {
                     val reports = state.data
                     progressBar.isVisible = false
+                    swipeRefreshLayout.isRefreshing = false
                     Log.d("ReportsFragment", "Quan sát thấy báo cáo: ${reports.size} báo cáo")
                     val hasReports = reports.isNotEmpty()
                     recyclerView.isVisible = hasReports
@@ -89,16 +127,36 @@ class ReportsFragment : Fragment() {
                 is UiState.Error -> {
                     Log.e("ReportsFragment", "Lỗi: ${state.message}")
                     progressBar.isVisible = false
+                    swipeRefreshLayout.isRefreshing = false
                     Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
                     recyclerView.isVisible = false
                     textViewNoReports.isVisible = true
                 }
                 else -> {
                     progressBar.isVisible = false
+                    swipeRefreshLayout.isRefreshing = false
                     Log.w("ReportsFragment", "Quan sát thấy trạng thái null hoặc không được xử lý.")
                     recyclerView.isVisible = false
                     textViewNoReports.isVisible = true
                 }
+            }
+        }
+
+        // Lắng nghe thay đổi từ AuthViewModel
+        authViewModel.accountDetails.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Success -> {
+                    state.data?.let { account ->
+                        Log.d("ReportsFragment", "Account loaded, fetching reports for teacher ID: ${account.id}")
+                        // Khi có ID tài khoản, gọi ViewModel để tải báo cáo cho giảng viên này
+                        reportViewModel.fetchReports(account.id)
+                    }
+                }
+                is UiState.Error -> {
+                    Log.e("ReportsFragment", "Failed to load account details: ${state.message}")
+                    Toast.makeText(context, "Không thể tải thông tin tài khoản.", Toast.LENGTH_SHORT).show()
+                }
+                else -> { /* Đang tải hoặc trạng thái khác */ }
             }
         }
     }

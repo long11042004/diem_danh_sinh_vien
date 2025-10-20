@@ -1,6 +1,7 @@
 package com.example.diemdanhsinhvien.repository
 
 import com.example.diemdanhsinhvien.data.model.Student
+import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.data.relations.StudentAttendanceHistory
 import com.example.diemdanhsinhvien.network.apiservice.AttendanceApiService
 import com.example.diemdanhsinhvien.network.apiservice.StudentApiService
@@ -31,18 +32,19 @@ class StudentRepository(
         }
     }
 
-    fun getAttendanceHistory(studentId: Int): Flow<List<StudentAttendanceHistory>> = flow {
+    fun getAttendanceHistory(studentId: Int): Flow<UiState<List<StudentAttendanceHistory>>> = flow {
+        emit(UiState.Loading)
         try {
             val response = attendanceApi.getAttendanceHistoryForStudent(studentId)
             if (response.isSuccessful) {
                 val historyList = response.body() ?: emptyList()
-                emit(historyList)
+                emit(UiState.Success(historyList))
             } else {
-                emit(emptyList())
+                emit(UiState.Error("Lỗi ${response.code()}: Không thể tải lịch sử điểm danh"))
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            emit(emptyList())
+            emit(UiState.Error(e.message ?: "Đã xảy ra lỗi không xác định"))
         }
     }
 

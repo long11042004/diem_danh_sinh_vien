@@ -98,7 +98,6 @@ class ClassAdapter(
 
     object DiffCallback : DiffUtil.ItemCallback<ClassWithStudentCount>() {
         override fun areItemsTheSame(oldItem: ClassWithStudentCount, newItem: ClassWithStudentCount): Boolean {
-            // Assuming 'id' is now a direct property of ClassWithStudentCount
             return oldItem.id == newItem.id
         }
 

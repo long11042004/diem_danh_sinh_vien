@@ -36,10 +36,10 @@ class ClassRepository(private val courseApi: CourseApiService) {
         return if (response.isSuccessful) response.body() else null
     }
 
-    fun getClassesWithStudentCount(): Flow<UiState<List<ClassWithStudentCount>>> = flow {
+    fun getClassesWithStudentCount(teacherId: Int): Flow<UiState<List<ClassWithStudentCount>>> = flow {
         emit(UiState.Loading)
         try {
-            val response = courseApi.getClassesWithStudentCount()
+            val response = courseApi.getClassesByTeacher(teacherId)
             if (response.isSuccessful) {
                 val list = response.body() ?: emptyList()
                 Log.d("API", "Response: $list")

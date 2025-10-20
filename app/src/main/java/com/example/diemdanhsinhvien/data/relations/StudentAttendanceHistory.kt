@@ -4,5 +4,6 @@ import com.example.diemdanhsinhvien.adapter.AttendanceStatus
 
 data class StudentAttendanceHistory(
     val date: Long,
-    val status: AttendanceStatus
+    val status: AttendanceStatus,
+    val courseName: String
 )

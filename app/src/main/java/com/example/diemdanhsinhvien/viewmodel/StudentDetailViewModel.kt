@@ -2,6 +2,7 @@ package com.example.diemdanhsinhvien.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.diemdanhsinhvien.common.UiState
 import androidx.lifecycle.viewModelScope
 import com.example.diemdanhsinhvien.data.relations.StudentAttendanceHistory
 import com.example.diemdanhsinhvien.repository.StudentRepository
@@ -14,12 +15,12 @@ class StudentDetailViewModel(
     studentId: Int
 ) : ViewModel() {
 
-    val attendanceHistory: StateFlow<List<StudentAttendanceHistory>> =
+    val attendanceHistory: StateFlow<UiState<List<StudentAttendanceHistory>>> =
         studentRepository.getAttendanceHistory(studentId)
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
-                initialValue = emptyList()
+                initialValue = UiState.Loading
             )
 }
 

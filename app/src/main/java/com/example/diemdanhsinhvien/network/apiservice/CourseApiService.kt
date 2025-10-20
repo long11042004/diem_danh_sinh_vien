@@ -17,6 +17,11 @@ interface CourseApiService {
     @GET("courses/withStudentCount")
     suspend fun getClassesWithStudentCount(): Response<List<ClassWithStudentCount>>
 
+    @GET("courses/withStudentCount/teacher/{teacherId}")
+    suspend fun getClassesByTeacher(
+        @Path("teacherId") teacherId: Int
+    ): Response<List<ClassWithStudentCount>>
+
     @GET("courses/{id}")
     suspend fun getClassById(
         @Path("id") classId: Int
