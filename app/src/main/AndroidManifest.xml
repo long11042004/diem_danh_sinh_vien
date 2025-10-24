@@ -56,6 +56,10 @@
         <activity
             android:name="com.example.diemdanhsinhvien.activity.OtpActivity"
             android:exported="false"/>
+        
+        <activity 
+            android:name="com.example.diemdanhsinhvien.activity.ClassReportDetailActivity"
+            android:exported="false" />
 
         <activity
             android:name="com.microsoft.identity.client.BrowserTabActivity"

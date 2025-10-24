@@ -21,7 +21,6 @@
             android:layout_marginEnd="16dp"
             android:textAppearance="?attr/textAppearanceTitleMedium"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/buttonExport"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Lập trình ứng dụng di động" />
@@ -47,12 +46,12 @@
             tools:text="Tỷ lệ chuyên cần: 95%" />
 
         <Button
-            android:id="@+id/buttonExport"
+            android:id="@+id/buttonDetails"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/export_button"
-            app:icon="@drawable/ic_checklist"
+            android:text="@string/details_button"
+            app:icon="@drawable/ic_info"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

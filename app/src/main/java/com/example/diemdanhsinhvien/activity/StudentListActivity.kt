@@ -106,11 +106,12 @@ class StudentListActivity : AppCompatActivity() {
             showSortDialog()
         }
 
-        // Xử lý sự kiện nhấn nút Điểm danh
         if (::attendanceButton.isInitialized) {
             attendanceButton.setOnClickListener {
                 val intent = Intent(this, AttendanceActivity::class.java)
                 intent.putExtra(AttendanceActivity.EXTRA_CLASS_ID, classId)
+                intent.putExtra(AttendanceActivity.EXTRA_CLASS_NAME, studentViewModel.classDetails.value?.courseName)
+                intent.putExtra(AttendanceActivity.EXTRA_CLASS_CODE, studentViewModel.classDetails.value?.classCode)
                 startActivity(intent)
             }
         }
@@ -126,12 +127,9 @@ class StudentListActivity : AppCompatActivity() {
             }
         })
 
-        // --- Thiết lập RecyclerView ---
         val adapter = StudentAdapter { student ->
             val intent = Intent(this, StudentDetailActivity::class.java).apply {
                 putExtra(StudentDetailActivity.EXTRA_STUDENT_DB_ID, student.id)
-                putExtra(StudentDetailActivity.EXTRA_STUDENT_NAME, student.studentName)
-                putExtra(StudentDetailActivity.EXTRA_STUDENT_CODE, student.studentId)
             }
             startActivity(intent)
         }
@@ -150,7 +148,6 @@ class StudentListActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     studentViewModel.students.collect { students ->
-                        // Cập nhật RecyclerView và hiển thị/ẩn dựa trên kết quả (đã lọc)
                         adapter.submitList(students)
                         val hasResults = students.isNotEmpty()
                         recyclerView.isVisible = hasResults
@@ -182,12 +179,10 @@ class StudentListActivity : AppCompatActivity() {
 
                 launch {
                     studentViewModel.isSourceStudentListEmpty.collect { isSourceEmpty ->
-                        // Ẩn các nút điều khiển nếu danh sách gốc trống
                         val controlsVisible = !isSourceEmpty
                         searchView.isVisible = controlsVisible
                         sortButton.isVisible = controlsVisible
 
-                        // Cập nhật nội dung thông báo cho phù hợp
                         if (isSourceEmpty) {
                             emptyTextView.text = getString(R.string.no_students_message)
                         } else {

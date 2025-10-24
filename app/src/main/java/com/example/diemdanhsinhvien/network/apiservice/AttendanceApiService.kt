@@ -7,6 +7,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import com.example.diemdanhsinhvien.data.model.AttendanceRecord
 import com.example.diemdanhsinhvien.data.model.AttendanceSession
+import com.example.diemdanhsinhvien.data.model.ClassReportDetail
 import com.example.diemdanhsinhvien.data.relations.StudentAttendanceHistory
 
 interface AttendanceApiService {
@@ -35,4 +36,9 @@ interface AttendanceApiService {
     suspend fun getPresentCountForClass(
         @Path("classId") classId: Int
     ): Response<Int>
+
+    @GET("attendance/report/class/{classId}")
+    suspend fun getReportDetailsForClass(
+        @Path("classId") classId: Int
+    ): Response<List<ClassReportDetail>>
 }

@@ -12,20 +12,26 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.adapter.AttendanceAdapter
+import com.example.diemdanhsinhvien.data.model.Notification
 import com.example.diemdanhsinhvien.network.apiservice.APIClient
 import com.example.diemdanhsinhvien.repository.ClassRepository
 import com.example.diemdanhsinhvien.repository.AttendanceRepository
 import com.example.diemdanhsinhvien.repository.StudentRepository
+import com.example.diemdanhsinhvien.repository.NotificationRepository
 import com.example.diemdanhsinhvien.viewmodel.AttendanceViewModel
 import com.example.diemdanhsinhvien.viewmodel.AttendanceViewModelFactory
 import com.example.diemdanhsinhvien.viewmodel.StudentViewModel
 import com.example.diemdanhsinhvien.viewmodel.StudentViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
+import java.util.Date
+import java.util.UUID
 import kotlinx.coroutines.launch
 
 class AttendanceActivity : AppCompatActivity() {
 
     private var classId: Int = -1
+    private var className: String? = null
+    private var classCode: String? = null
     private lateinit var attendanceAdapter: AttendanceAdapter
 
     private val studentViewModel: StudentViewModel by viewModels {
@@ -54,6 +60,8 @@ class AttendanceActivity : AppCompatActivity() {
         setContentView(R.layout.activity_attendance)
 
         classId = intent.getIntExtra(EXTRA_CLASS_ID, -1)
+        className = intent.getStringExtra(EXTRA_CLASS_NAME)
+        classCode = intent.getStringExtra(EXTRA_CLASS_CODE)
         if (classId == -1) {
             Toast.makeText(this, "Lỗi: Không tìm thấy ID lớp học.", Toast.LENGTH_SHORT).show()
             finish()
@@ -67,6 +75,21 @@ class AttendanceActivity : AppCompatActivity() {
             val results = attendanceAdapter.getAttendanceResults()
             attendanceViewModel.saveAttendance(classId, results)
 
+            val message = if (className != null && classCode != null) {
+                "Bạn đã điểm danh thành công cho lớp $classCode - $className."
+            } else {
+                "Bạn đã điểm danh thành công cho lớp học này."
+            }
+            val newNotification = Notification(
+                id = UUID.randomUUID().toString(),
+                title = "Điểm danh thành công",
+                message = message,
+                timestamp = Date(),
+                isRead = false
+            )
+
+            NotificationRepository.addNotification(newNotification)
+
             Toast.makeText(this, getString(R.string.attendance_saved_successfully), Toast.LENGTH_SHORT).show()
             finish()
         }
@@ -74,6 +97,7 @@ class AttendanceActivity : AppCompatActivity() {
 
     private fun setupToolbar() {
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbarAttendance)
+        toolbar.title = className ?: getString(R.string.attendance_screen_title)
         toolbar.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
@@ -96,5 +120,7 @@ class AttendanceActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_CLASS_ID = "extra_class_id_attendance"
+        const val EXTRA_CLASS_NAME = "extra_class_name_attendance"
+        const val EXTRA_CLASS_CODE = "extra_class_code_attendance"
     }
 }

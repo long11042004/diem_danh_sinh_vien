@@ -57,4 +57,23 @@ class StudentRepository(
         val response = studentApi.deleteStudent(student.id)
         return response.isSuccessful
     }
+
+    fun getStudentById(studentId: Int): Flow<UiState<Student>> = flow {
+        emit(UiState.Loading)
+        try {
+            val response = studentApi.getStudentById(studentId)
+            if (response.isSuccessful) {
+                val student = response.body()
+                if (student != null) {
+                    emit(UiState.Success(student))
+                } else {
+                    emit(UiState.Error("Không tìm thấy thông tin sinh viên."))
+                }
+            } else {
+                emit(UiState.Error("Lỗi ${response.code()}: Không thể tải thông tin sinh viên"))
+            }
+        } catch (e: Exception) {
+            emit(UiState.Error(e.message ?: "Đã xảy ra lỗi không xác định khi tải thông tin sinh viên"))
+        }
+    }
 }

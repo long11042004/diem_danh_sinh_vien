@@ -1,5 +1,6 @@
 package com.example.diemdanhsinhvien.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.diemdanhsinhvien.activity.ClassReportDetailActivity
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.data.model.Report
 
@@ -29,17 +31,22 @@ class ReportAdapter(private val onItemClicked: (Report) -> Unit) :
         private val textViewCourseName: TextView = itemView.findViewById(R.id.textViewCourseName)
         private val textViewClassCode: TextView = itemView.findViewById(R.id.textViewClassCode)
         private val textViewAttendanceRate: TextView = itemView.findViewById(R.id.textViewAttendanceRate)
-        private val buttonExport: Button = itemView.findViewById(R.id.buttonExport)
+        private val buttonDetails: Button = itemView.findViewById(R.id.buttonDetails)
 
         fun bind(report: Report, onItemClicked: (Report) -> Unit) {
             textViewCourseName.text = report.courseName
             textViewClassCode.text = "Mã lớp: ${report.classCode}"
         
             val formattedRate = String.format("%.1f%%", report.attendanceRate)
-            textViewAttendanceRate.text = "Tỷ lệ chuyên cần: ${formattedRate}"
+            textViewAttendanceRate.text = itemView.context.getString(R.string.attendance_rate_format, formattedRate)
 
-            buttonExport.setOnClickListener {
-                onItemClicked(report)
+            buttonDetails.setOnClickListener {
+                val context = itemView.context
+                val intent = Intent(context, ClassReportDetailActivity::class.java).apply {
+                    putExtra(ClassReportDetailActivity.EXTRA_CLASS_ID, report.classId)
+                    putExtra(ClassReportDetailActivity.EXTRA_CLASS_NAME, report.courseName)
+                }
+                context.startActivity(intent)
             }
         }
     }
@@ -47,7 +54,7 @@ class ReportAdapter(private val onItemClicked: (Report) -> Unit) :
     companion object {
         private val DiffCallback = object : DiffUtil.ItemCallback<Report>() {
             override fun areItemsTheSame(oldItem: Report, newItem: Report): Boolean {
-                return oldItem.classCode == newItem.classCode
+                return oldItem.classId == newItem.classId
             }
 
             override fun areContentsTheSame(oldItem: Report, newItem: Report): Boolean {

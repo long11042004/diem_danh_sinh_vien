@@ -97,17 +97,15 @@ class ReportsFragment : Fragment() {
         adapter: ReportAdapter,
         swipeRefreshLayout: SwipeRefreshLayout
     ) {
-        // Lắng nghe thay đổi từ ReportViewModel
         reportViewModel.reports.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Loading -> {
                     Log.d("ReportsFragment", "Đang tải báo cáo...")
-                    // Chỉ hiển thị ProgressBar ở giữa khi tải lần đầu
                     if (adapter.currentList.isEmpty()) {
                         progressBar.isVisible = true
                         recyclerView.isVisible = false
                         textViewNoReports.isVisible = false
-                        barChart.isVisible = false
+                        barChart.isVisible = true
                     }
                 }
                 is UiState.Success -> {
@@ -130,6 +128,7 @@ class ReportsFragment : Fragment() {
                     swipeRefreshLayout.isRefreshing = false
                     Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
                     recyclerView.isVisible = false
+                    barChart.isVisible = true
                     textViewNoReports.isVisible = true
                 }
                 else -> {
@@ -142,13 +141,11 @@ class ReportsFragment : Fragment() {
             }
         }
 
-        // Lắng nghe thay đổi từ AuthViewModel
         authViewModel.accountDetails.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Success -> {
                     state.data?.let { account ->
                         Log.d("ReportsFragment", "Account loaded, fetching reports for teacher ID: ${account.id}")
-                        // Khi có ID tài khoản, gọi ViewModel để tải báo cáo cho giảng viên này
                         reportViewModel.fetchReports(account.id)
                     }
                 }
@@ -197,7 +194,6 @@ class ReportsFragment : Fragment() {
 
     private fun exportReport(report: Report) {
         Log.i("ReportsFragment", "Exporting report for course: ${report.courseName}")
-        // TODO: Triển khai logic xuất file báo cáo (ví dụ: tạo file Excel/PDF)
         Toast.makeText(context, "Đang xuất báo cáo cho lớp: ${report.courseName}", Toast.LENGTH_SHORT).show()
     }
 }

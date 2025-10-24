@@ -4,6 +4,8 @@ data class Student(
     val id: Int,
     val classId: Int,
     val studentName: String,
-    val studentId: String
+    val studentId: String,
+    val email: String,
+    val department: String,
+    val className: String
 )
-

@@ -80,7 +80,7 @@ class StudentViewModel(
 
 
     fun addNewStudent(studentName: String, studentId: String, classId: Int) = viewModelScope.launch {
-        val newStudent = Student(id= (1000..999999).random(), studentName = studentName, studentId = studentId, classId = classId)
+        val newStudent = Student(id= 0, studentName = studentName, studentId = studentId, classId = classId, email = "", department = "", className = "")
         studentRepository.insertStudent(newStudent)
     }
 

@@ -38,15 +38,12 @@ class StudentDetailActivity : AppCompatActivity() {
     }
     companion object {
         const val EXTRA_STUDENT_DB_ID = "extra_student_db_id"
-        const val EXTRA_STUDENT_NAME = "extra_student_name"
-        const val EXTRA_STUDENT_CODE = "extra_student_id"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_student_detail)
 
-        // Setup toolbar
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbarStudentDetail)
         toolbar.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -59,56 +56,80 @@ class StudentDetailActivity : AppCompatActivity() {
             return
         }
 
-        val studentName = intent.getStringExtra(EXTRA_STUDENT_NAME)
-        val studentCode = intent.getStringExtra(EXTRA_STUDENT_CODE)
-
-        val nameTextView = findViewById<TextView>(R.id.textViewStudentName)
-        val idTextView = findViewById<TextView>(R.id.textViewStudentId)
         val avatarImageView = findViewById<ImageView>(R.id.imageViewAvatarDetail)
-
-        nameTextView.text = studentName
-        idTextView.text = getString(R.string.student_id_label_prefix, studentCode)
         avatarImageView.setImageResource(R.drawable.ic_student_avatar)
 
-        setupRecyclerView()
+        observeUi()
     }
     
-    private fun setupRecyclerView() {
+    private fun observeUi() {
+        val nameTextView = findViewById<TextView>(R.id.textViewStudentName)
+        val idTextView = findViewById<TextView>(R.id.textViewStudentId)
+
+        val emailTextView = findViewById<TextView>(R.id.textViewStudentEmail)
+        val departmentTextView = findViewById<TextView>(R.id.textViewStudentDepartment)
+        val classTextView = findViewById<TextView>(R.id.textViewStudentClass)
+
         val historyAdapter = AttendanceHistoryAdapter()
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewAttendanceHistory)
         val noHistoryTextView = findViewById<TextView>(R.id.textViewNoHistory)
-        val progressBar = findViewById<ProgressBar>(R.id.progressBarStudentDetail) // Giả sử bạn có ProgressBar với ID này trong layout
+        val progressBar = findViewById<ProgressBar>(R.id.progressBarStudentDetail)
 
         recyclerView.adapter = historyAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.attendanceHistory.collect { state ->
-                    when (state) {
-                        is UiState.Loading -> {
-                            progressBar.isVisible = true
-                            recyclerView.isVisible = false
-                            noHistoryTextView.isVisible = false
+                launch {
+                    viewModel.studentDetail.collect { state ->
+                        when (state) {
+                            is UiState.Loading -> {
+                                nameTextView.text = "Đang tải..."
+                            }
+                            is UiState.Success -> {
+                                val student = state.data
+                                nameTextView.text = student.studentName
+                                idTextView.text = student.studentId
+                                emailTextView.text = student.email
+                                departmentTextView.text = student.department
+                                classTextView.text = student.className
+                            }
+                            is UiState.Error -> {
+                                nameTextView.text = "Lỗi tải thông tin"
+                                Toast.makeText(this@StudentDetailActivity, state.message, Toast.LENGTH_LONG).show()
+                            }
+                            else -> { /* Không làm gì với các trạng thái khác */ }
                         }
-                        is UiState.Success -> {
-                            progressBar.isVisible = false
-                            val historyList = state.data
-                            val hasHistory = historyList.isNotEmpty()
-                            recyclerView.isVisible = hasHistory
-                            noHistoryTextView.isVisible = !hasHistory
-                            historyAdapter.submitList(historyList)
-                        }
-                        is UiState.Error -> {
-                            progressBar.isVisible = false
-                            recyclerView.isVisible = false
-                            noHistoryTextView.isVisible = true
-                            noHistoryTextView.text = state.message
-                        }
-                        else -> {
-                            progressBar.isVisible = false
-                            recyclerView.isVisible = false
-                            noHistoryTextView.isVisible = true
+                    }
+                }
+
+                launch {
+                    viewModel.attendanceHistory.collect { state ->
+                        when (state) {
+                            is UiState.Loading -> {
+                                progressBar.isVisible = true
+                                recyclerView.isVisible = false
+                                noHistoryTextView.isVisible = false
+                            }
+                            is UiState.Success -> {
+                                progressBar.isVisible = false
+                                val historyList = state.data
+                                val hasHistory = historyList.isNotEmpty()
+                                recyclerView.isVisible = hasHistory
+                                noHistoryTextView.isVisible = !hasHistory
+                                historyAdapter.submitList(historyList)
+                            }
+                            is UiState.Error -> {
+                                progressBar.isVisible = false
+                                recyclerView.isVisible = false
+                                noHistoryTextView.isVisible = true
+                                noHistoryTextView.text = state.message
+                            }
+                            else -> {
+                                progressBar.isVisible = false
+                                recyclerView.isVisible = false
+                                noHistoryTextView.isVisible = true
+                            }
                         }
                     }
                 }

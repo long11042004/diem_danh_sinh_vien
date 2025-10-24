@@ -3,6 +3,7 @@ package com.example.diemdanhsinhvien.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.diemdanhsinhvien.common.UiState
+import com.example.diemdanhsinhvien.data.model.Student
 import androidx.lifecycle.viewModelScope
 import com.example.diemdanhsinhvien.data.relations.StudentAttendanceHistory
 import com.example.diemdanhsinhvien.repository.StudentRepository
@@ -14,6 +15,14 @@ class StudentDetailViewModel(
     studentRepository: StudentRepository,
     studentId: Int
 ) : ViewModel() {
+
+    val studentDetail: StateFlow<UiState<Student>> =
+        studentRepository.getStudentById(studentId)
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = UiState.Loading
+            )
 
     val attendanceHistory: StateFlow<UiState<List<StudentAttendanceHistory>>> =
         studentRepository.getAttendanceHistory(studentId)

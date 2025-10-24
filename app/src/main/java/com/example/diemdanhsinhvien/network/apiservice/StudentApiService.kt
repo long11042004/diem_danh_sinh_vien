@@ -33,4 +33,9 @@ interface StudentApiService {
     suspend fun getStudentCountForClass(
         @Path("classId") classId: Int
     ): Response<Int>
+
+    @GET("students/{id}")
+    suspend fun getStudentById(
+        @Path("id") id: Int
+    ): Response<Student>
 }

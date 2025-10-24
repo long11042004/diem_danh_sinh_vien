@@ -17,6 +17,7 @@ import com.example.diemdanhsinhvien.viewmodel.ClassViewModelFactory
 import com.example.diemdanhsinhvien.fragment.AccountFragment
 import com.example.diemdanhsinhvien.fragment.ReportsFragment
 import com.example.diemdanhsinhvien.fragment.ScheduleFragment
+import com.example.diemdanhsinhvien.fragment.NotificationsFragment
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.network.apiservice.APIClient
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -67,6 +68,11 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_account -> {
                     selectedFragment = AccountFragment()
                     title = getString(R.string.title_account)
+                    fabAddClass.hide()
+                }
+                R.id.navigation_notifications -> {
+                    selectedFragment = NotificationsFragment()
+                    title = getString(R.string.title_notifications)
                     fabAddClass.hide()
                 }
                 else -> {

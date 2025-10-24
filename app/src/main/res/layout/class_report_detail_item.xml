@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/textViewSessionDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Buổi học ngày 26/06/2024" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewSessionDate">
+
+            <TextView
+                android:id="@+id/textViewPresentCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="4dp"
+                android:gravity="center_vertical"
+                android:textAppearance="?attr/textAppearanceBody1"
+                app:drawableStartCompat="@drawable/ic_check"
+                app:drawableTint="@color/green"
+                tools:text="Có mặt: 30" />
+
+            <TextView
+                android:id="@+id/textViewAbsentCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:drawablePadding="4dp"
+                android:gravity="center_vertical"
+                android:textAppearance="?attr/textAppearanceBody1"
+                app:drawableStartCompat="@drawable/ic_cancel"
+                app:drawableTint="@color/red"
+                tools:text="Vắng: 2" />
+
+            <TextView
+                android:id="@+id/textViewLateCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:drawablePadding="4dp"
+                android:gravity="center_vertical"
+                android:textAppearance="?attr/textAppearanceBody1"
+                app:drawableStartCompat="@drawable/ic_late"
+                app:drawableTint="@color/orange"
+                tools:text="Đi muộn: 1" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

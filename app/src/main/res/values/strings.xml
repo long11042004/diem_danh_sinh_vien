@@ -62,6 +62,10 @@
     <string name="lecturer_id_format">Mã số: %1$s</string>
     <string name="error_loading_data">Lỗi tải dữ liệu</string>
 
+    <!-- Màn hình thông báo -->
+    <string name="title_notifications">Thông báo</string>
+    <string name="no_notifications_message">Chưa có thông báo nào.</string>
+
     <!-- Chức năng về lớp học -->
     <string name="add_class">Thêm lớp học</string>
     <string name="add_class_dialog_title">Thêm lớp học mới</string>
@@ -123,8 +127,16 @@
     <!-- Màn hình báo cáo -->
     <string name="export_button">Xuất file</string>
     <string name="reports_title">Báo cáo thống kê</string>
+    <string name="details_button">Chi tiết</string>
     <string name="class_reports_title">Báo cáo theo lớp</string>
     <string name="no_reports_message">Chưa có báo cáo nào để hiển thị.</string>
+    <string name="report_detail_title">Chi tiết báo cáo</string>
+    <string name="no_report_details">Không có dữ liệu chi tiết cho lớp học này.</string>
+    <string name="session_date_format">Buổi học ngày %1$s</string>
+    <string name="present_count_format">Có mặt: %1$d</string>
+    <string name="absent_count_format">Vắng: %1$d</string>
+    <string name="late_count_format">Đi muộn: %1$d</string>
+    <string name="attendance_rate_format">Tỷ lệ chuyên cần: %1$s</string>
 
     <!-- Màn hình tài khoản -->
     <string name="logout_button">Đăng xuất</string>
@@ -143,4 +155,6 @@
     <string name="title">Chức danh</string>
     <string name="title_label_display">Chức danh: %1$s</string>
     <string name="created_at_label">Ngày tạo</string>
+    <string name="class_label">Lớp</string>
+    <string name="student_id_label">MSSV</string>
 </resources>
