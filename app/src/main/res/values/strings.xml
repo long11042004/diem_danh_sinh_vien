@@ -42,7 +42,7 @@
 
     <!-- Màn hình chính -->
     <string name="title_home">Trang chủ</string>
-    <string name="title_schedule">Lịch học</string>
+    <string name="title_search">Tra cứu</string>
     <string name="title_history">Lịch sử</string>
     <string name="title_classes">Lớp học</string>
     <string name="title_reports">Thống kê</string>
@@ -109,6 +109,13 @@
     <string name="back_button_description">Quay lại</string>
     <string name="search_student_hint">Tìm theo tên hoặc MSSV...</string>
     <string name="no_search_results">Không tìm thấy sinh viên nào.</string>
+    <string name="search_no_results_found">Không tìm thấy kết quả nào.</string>
+
+    <!-- Màn hình tra cứu -->
+    <string name="search_hint_placeholder">Tìm kiếm sinh viên, giảng viên, lớp học...</string>
+    <string name="search_category_students">Sinh viên</string>
+    <string name="search_category_lecturers">Giảng viên</string>
+    <string name="search_results_list_description">Danh sách kết quả tìm kiếm</string>
 
     <!-- Màn hình điểm danh -->
     <string name="attendance_screen_title">Điểm danh</string>
