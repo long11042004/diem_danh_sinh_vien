@@ -27,6 +27,7 @@ import com.example.diemdanhsinhvien.repository.AccountRepository
 import com.example.diemdanhsinhvien.viewmodel.AuthViewModel
 import com.example.diemdanhsinhvien.viewmodel.AuthViewModelFactory
 import com.example.diemdanhsinhvien.activity.EditAccountActivity
+import com.example.diemdanhsinhvien.activity.ChangePasswordActivity
 import com.microsoft.identity.client.ISingleAccountPublicClientApplication
 import com.microsoft.identity.client.IPublicClientApplication
 import com.microsoft.identity.client.PublicClientApplication
@@ -43,6 +44,7 @@ class AccountFragment : Fragment() {
     private lateinit var tvDepartment: TextView
     private lateinit var tvTitle: TextView
     private lateinit var btnEditAccount: Button
+    private lateinit var btnChangePassword: Button
     private lateinit var btnLogout: Button
     private lateinit var tvEmailValue: TextView
     private lateinit var tvPhoneValue: TextView
@@ -72,6 +74,7 @@ class AccountFragment : Fragment() {
         tvDepartment = view.findViewById(R.id.tv_department_value)
         tvTitle = view.findViewById(R.id.tv_title_value)
         btnEditAccount = view.findViewById(R.id.btn_edit_account)
+        btnChangePassword = view.findViewById(R.id.btn_change_password)
         btnLogout = view.findViewById(R.id.btn_logout)
         tvEmailValue = view.findViewById(R.id.tv_email_value)
         tvPhoneValue = view.findViewById(R.id.tv_phone_value)
@@ -115,6 +118,12 @@ class AccountFragment : Fragment() {
             Log.d("AccountFragment", "Edit Account button clicked.")
             val intent = Intent(requireActivity(), EditAccountActivity::class.java)
             startActivityForResult(intent, EDIT_ACCOUNT_REQUEST_CODE)
+        }
+
+        btnChangePassword.setOnClickListener {
+            Log.d("AccountFragment", "Change Password button clicked.")
+            val intent = Intent(requireActivity(), ChangePasswordActivity::class.java)
+            startActivity(intent)
         }
 
         btnLogout.setOnClickListener {

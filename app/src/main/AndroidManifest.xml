@@ -62,6 +62,10 @@
             android:exported="false" />
 
         <activity
+            android:name="com.example.diemdanhsinhvien.activity.ChangePasswordActivity"
+            android:exported="false" />
+
+        <activity
             android:name="com.microsoft.identity.client.BrowserTabActivity"
             android:exported="true">
             <intent-filter>

@@ -3,11 +3,14 @@ package com.example.diemdanhsinhvien.repository
 import android.util.Log
 import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.data.model.Account
+import com.example.diemdanhsinhvien.data.request.ChangePasswordRequest
 import com.example.diemdanhsinhvien.data.request.LoginRequest
-import com.example.diemdanhsinhvien.data.request.UpdateAccountRequest
 import com.example.diemdanhsinhvien.data.request.RegisterRequest
 import com.example.diemdanhsinhvien.data.response.ApiLoginResponse
+import com.example.diemdanhsinhvien.data.response.ErrorResponse
 import com.example.diemdanhsinhvien.network.apiservice.AccountApiService
+import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -71,16 +74,58 @@ class AccountRepository(private val accountApi: AccountApiService) {
                 emit(UiState.Success(Unit))
             } else {
                 val errorBody = response.errorBody()?.string()
-                val errorMessage = if (!errorBody.isNullOrEmpty()) {
-                    errorBody
-                } else {
-                    "Lỗi ${response.code()}: ${response.message()}"
+                var errorMessage = "Lỗi ${response.code()}: ${response.message()}" // Default message
+
+                if (!errorBody.isNullOrEmpty()) {
+                    try {
+                        val gson = Gson()
+                        val errorResponse = gson.fromJson(errorBody, ErrorResponse::class.java)
+                        val apiMessage = errorResponse.message ?: errorResponse.error
+                        if (!apiMessage.isNullOrBlank()) {
+                            errorMessage = apiMessage
+                        }
+                    } catch (e: JsonSyntaxException) {
+                        // The error body is not a valid JSON. It's probably a plain text message.
+                        errorMessage = errorBody
+                    }
                 }
                 emit(UiState.Error(errorMessage))
                 Log.e("AccountRepository", "Lỗi cập nhật tài khoản: $errorMessage")
             }
         } catch (e: Exception) {
             Log.e("AccountRepository", "Ngoại lệ khi cập nhật tài khoản", e)
+            emit(UiState.Error(e.localizedMessage ?: "Đã có lỗi không xác định xảy ra"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+    fun changePassword(request: ChangePasswordRequest): Flow<UiState<Unit>> = flow {
+        emit(UiState.Loading)
+        try {
+            val response = accountApi.changePassword(request)
+            if (response.isSuccessful) {
+                emit(UiState.Success(Unit))
+            } else {
+                val errorBody = response.errorBody()?.string()
+                var errorMessage = "Lỗi ${response.code()}: ${response.message()}" // Default message
+
+                if (!errorBody.isNullOrEmpty()) {
+                    try {
+                        val gson = Gson()
+                        val errorResponse = gson.fromJson(errorBody, ErrorResponse::class.java)
+                        val apiMessage = errorResponse.message ?: errorResponse.error
+                        if (!apiMessage.isNullOrBlank()) {
+                            errorMessage = apiMessage
+                        }
+                    } catch (e: JsonSyntaxException) {
+                        // The error body is not a valid JSON. It's probably a plain text message.
+                        errorMessage = errorBody
+                    }
+                }
+                emit(UiState.Error(errorMessage))
+                Log.e("AccountRepository", "Lỗi đổi mật khẩu: $errorMessage")
+            }
+        } catch (e: Exception) {
+            Log.e("AccountRepository", "Ngoại lệ khi đổi mật khẩu", e)
             emit(UiState.Error(e.localizedMessage ?: "Đã có lỗi không xác định xảy ra"))
         }
     }.flowOn(Dispatchers.IO)

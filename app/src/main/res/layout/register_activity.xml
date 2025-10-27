@@ -13,11 +13,11 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/registerToolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"            
-            android:background="?attr/colorPrimary"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/ic_office_logo_background"
             app:navigationIcon="?attr/homeAsUpIndicator"
             app:title="@string/register_screen_title"
-            app:titleTextColor="@color/white"/>
+            app:titleTextColor="@color/black" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

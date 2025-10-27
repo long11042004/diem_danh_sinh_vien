@@ -19,7 +19,7 @@ import com.example.diemdanhsinhvien.fragment.ReportsFragment
 import com.example.diemdanhsinhvien.fragment.NotificationsFragment
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.network.apiservice.APIClient
-import com.example.diemdanhsinhvien.ui.search.SearchFragment
+import com.example.diemdanhsinhvien.fragment.SearchFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText

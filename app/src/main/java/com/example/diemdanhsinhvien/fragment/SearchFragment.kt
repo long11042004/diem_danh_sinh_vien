@@ -1,4 +1,4 @@
-package com.example.diemdanhsinhvien.ui.search
+package com.example.diemdanhsinhvien.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -28,7 +28,7 @@ class SearchFragment : Fragment() {
     private lateinit var chipLecturers: Chip
     private lateinit var chipClasses: Chip
 
-    private val viewModel: SearchViewModel by viewModels()
+    // private val viewModel: SearchViewModel by viewModels()
     // Bạn sẽ cần tạo Adapter ở bước tiếp theo
     // private lateinit var searchAdapter: SearchAdapter 
 
@@ -96,12 +96,12 @@ class SearchFragment : Fragment() {
 
     private fun performSearch() {
         val query = searchEditText.text.toString().trim()
-        val selectedCategory = when (searchCategoryChipGroup.checkedChipId) {
+        /* val selectedCategory = when (searchCategoryChipGroup.checkedChipId) {
             R.id.chip_lecturers -> SearchCategory.LECTURERS
             R.id.chip_classes -> SearchCategory.CLASSES
-            else -> SearchCategory.STUDENTS // Mặc định
+            else -> SearchCategory.STUDENTS
         }
-        viewModel.search(query, selectedCategory)
+        viewModel.search(query, selectedCategory) */
     }
 
     private fun observeViewModel() {
@@ -109,7 +109,7 @@ class SearchFragment : Fragment() {
         viewModel.searchResults.observe(viewLifecycleOwner) { results ->
             searchAdapter.submitList(results)
         }
-        */
+
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             progressBar.isVisible = isLoading
@@ -119,5 +119,6 @@ class SearchFragment : Fragment() {
             textViewNoResults.isVisible = noResults
             recyclerViewSearchResults.isVisible = !noResults
         }
+        */
     }
 }

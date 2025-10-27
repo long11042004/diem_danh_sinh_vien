@@ -2,6 +2,7 @@ package com.example.diemdanhsinhvien.network.apiservice
 
 import com.example.diemdanhsinhvien.data.model.Account
 import com.example.diemdanhsinhvien.data.request.*
+import com.example.diemdanhsinhvien.data.request.ChangePasswordRequest
 import com.example.diemdanhsinhvien.data.response.ApiLoginResponse
 import retrofit2.Response
 import retrofit2.http.*
@@ -36,4 +37,9 @@ interface AccountApiService {
     suspend fun refreshToken(
         @Header("Authorization") refreshToken: String
     ): Response<ApiLoginResponse>
+
+    @PUT("accounts/changePassword")
+    suspend fun changePassword(
+        @Body request: ChangePasswordRequest
+    ): Response<Unit>
 }

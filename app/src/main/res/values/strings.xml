@@ -54,7 +54,7 @@
     <string name="student_id_placeholder">MSSV: 20181234</string>
     <string name="student_name_placeholder">Nguyễn Văn A</string>
     <string name="lecturer_name_placeholder">GV. Nguyễn Văn A</string>
-    <string name="lecturer_id_placeholder">Mã GV: LECT123</string>
+    <string name="lecturer_id_placeholder">Mã Cán bộ: LECT123</string>
     <string name="attendance_rate">Tỷ lệ chuyên cần</string>
     <string name="class_list">Danh sách lớp học</string>
     <string name="start_attendance">Điểm danh</string>
@@ -155,8 +155,8 @@
     <string name="display_name_hint">Tên hiển thị</string>
     <string name="save_button">Lưu</string>
     <string name="edit_avatar">Chỉnh sửa ảnh đại diện</string>
-    <string name="lecturer_id">Mã GV</string>
-    <string name="lecturer_id_label_display">Mã GV: %1$s</string>
+    <string name="lecturer_id">Mã Cán bộ</string>
+    <string name="lecturer_id_label_display">Mã Cán bộ: %1$s</string>
     <string name="department">Khoa</string>
     <string name="department_label_display">Khoa: %1$s</string>
     <string name="title">Chức danh</string>
@@ -164,4 +164,10 @@
     <string name="created_at_label">Ngày tạo</string>
     <string name="class_label">Lớp</string>
     <string name="student_id_label">MSSV</string>
+
+    <!-- Màn hình đổi mật khẩu -->
+    <string name="old_password">Mật khẩu cũ</string>
+    <string name="new_password">Mật khẩu mới</string>
+    <string name="save_change">Lưu thay đổi</string>
+    <string name="back">Quay lại</string>
 </resources>

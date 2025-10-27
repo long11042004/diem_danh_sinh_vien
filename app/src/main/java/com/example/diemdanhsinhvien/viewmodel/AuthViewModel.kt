@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.data.model.Account
+import com.example.diemdanhsinhvien.data.request.ChangePasswordRequest
 import com.example.diemdanhsinhvien.data.request.LoginRequest
 import com.example.diemdanhsinhvien.data.request.RegisterRequest
 import com.example.diemdanhsinhvien.data.request.UpdateAccountRequest
@@ -60,6 +61,19 @@ class AuthViewModel(private val accountRepository: AccountRepository) : ViewMode
         viewModelScope.launch {
             accountRepository.updateAccount(id, account).collect { state ->
                 _updateState.postValue(state)
+            }
+        }
+    }
+
+    // Chức năng đổi mật khẩu
+    private val _changePasswordState = MutableLiveData<UiState<Unit>>()
+    val changePasswordState: LiveData<UiState<Unit>> = _changePasswordState
+
+    fun changePassword(oldPassword: String, newPassword: String) {
+        viewModelScope.launch {
+            val request = ChangePasswordRequest(oldPassword = oldPassword, newPassword = newPassword)
+            accountRepository.changePassword(request).collect { state ->
+                _changePasswordState.postValue(state)
             }
         }
     }
