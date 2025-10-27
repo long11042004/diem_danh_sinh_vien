@@ -64,6 +64,8 @@ object APIClient {
     fun attendanceApi(context: Context): AttendanceApiService = getRetrofit(context).create(
         AttendanceApiService::class.java)
 
+    fun searchApi(context: Context): SearchApiService = getRetrofit(context).create(SearchApiService::class.java)
+
     // API chỉ dùng để refresh token
     fun tokenApi(context: Context): AccountApiService = getTokenRetrofit().create(AccountApiService::class.java)
 }
