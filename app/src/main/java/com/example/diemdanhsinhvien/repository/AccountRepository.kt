@@ -66,6 +66,25 @@ class AccountRepository(private val accountApi: AccountApiService) {
         }
     }.flowOn(Dispatchers.IO)
 
+    fun getAccountById(id: Int): Flow<UiState<Account>> = flow {
+        emit(UiState.Loading)
+        try {
+            val response = accountApi.getAccountById(id)
+
+            if (response.isSuccessful) {
+                response.body()?.let { accountDetails ->
+                    emit(UiState.Success(accountDetails))
+                    Log.i("AccountRepository", "Chi tiết tài khoản theo ID: $accountDetails")
+                } ?: emit(UiState.Error("Không nhận được dữ liệu tài khoản."))
+            } else {
+                emit(UiState.Error("Lỗi ${response.code()}: ${response.message()}"))
+                Log.i("AccountRepository", "Lỗi ${response.code()}: ${response.message()}")
+            }
+        } catch (e: Exception) {
+            emit(UiState.Error(e.localizedMessage ?: "Đã có lỗi không xác định xảy ra"))
+        }
+    }.flowOn(Dispatchers.IO)
+
     fun updateAccount(id: Int, account: Account): Flow<UiState<Unit>> = flow {
         emit(UiState.Loading)
         try {

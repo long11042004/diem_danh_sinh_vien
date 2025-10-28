@@ -81,7 +81,7 @@ class ReportsFragment : Fragment() {
 
         swipeRefreshLayout.setOnRefreshListener {
             Log.d("ReportsFragment", "Swipe to refresh triggered.")
-            authViewModel.getAccountDetails() // Tải lại chi tiết tài khoản để kích hoạt tải báo cáo
+            authViewModel.getAccountDetails()
         }
 
         setupObservers(recyclerView, textViewNoReports, barChart, progressBar, adapter, swipeRefreshLayout)

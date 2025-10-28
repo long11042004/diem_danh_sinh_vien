@@ -1,6 +1,7 @@
 package com.example.diemdanhsinhvien.activity
 
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.ProgressBar
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.adapter.AttendanceHistoryAdapter
 import com.example.diemdanhsinhvien.common.UiState
+import com.example.diemdanhsinhvien.common.HistoryUiState
 import com.example.diemdanhsinhvien.network.apiservice.APIClient
 import com.example.diemdanhsinhvien.repository.StudentRepository
 import com.example.diemdanhsinhvien.viewmodel.StudentDetailViewModel
@@ -73,7 +75,9 @@ class StudentDetailActivity : AppCompatActivity() {
         val historyAdapter = AttendanceHistoryAdapter()
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewAttendanceHistory)
         val noHistoryTextView = findViewById<TextView>(R.id.textViewNoHistory)
-        val progressBar = findViewById<ProgressBar>(R.id.progressBarStudentDetail)
+        val progressBar = findViewById<ProgressBar>(R.id.progressBarStudentDetail) // Dùng cho mục lịch sử
+        val historyTitle = findViewById<TextView>(R.id.textViewHistoryTitle)
+        val historyDivider = findViewById<View>(R.id.divider)
 
         recyclerView.adapter = historyAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -105,30 +109,39 @@ class StudentDetailActivity : AppCompatActivity() {
 
                 launch {
                     viewModel.attendanceHistory.collect { state ->
+                        // Mặc định hiển thị các thành phần của mục lịch sử
+                        historyTitle.isVisible = true
+                        historyDivider.isVisible = true
+
                         when (state) {
-                            is UiState.Loading -> {
+                            is HistoryUiState.Loading -> {
                                 progressBar.isVisible = true
                                 recyclerView.isVisible = false
                                 noHistoryTextView.isVisible = false
                             }
-                            is UiState.Success -> {
+                            is HistoryUiState.Success -> {
                                 progressBar.isVisible = false
                                 val historyList = state.data
                                 val hasHistory = historyList.isNotEmpty()
                                 recyclerView.isVisible = hasHistory
                                 noHistoryTextView.isVisible = !hasHistory
+
+                                noHistoryTextView.text = "Chưa có lịch sử điểm danh."
                                 historyAdapter.submitList(historyList)
                             }
-                            is UiState.Error -> {
+                            is HistoryUiState.Error -> {
                                 progressBar.isVisible = false
                                 recyclerView.isVisible = false
                                 noHistoryTextView.isVisible = true
                                 noHistoryTextView.text = state.message
                             }
-                            else -> {
+                            is HistoryUiState.Hidden -> {
+                                // Ẩn toàn bộ mục lịch sử
                                 progressBar.isVisible = false
+                                historyTitle.isVisible = false
+                                historyDivider.isVisible = false
                                 recyclerView.isVisible = false
-                                noHistoryTextView.isVisible = true
+                                noHistoryTextView.isVisible = false
                             }
                         }
                     }

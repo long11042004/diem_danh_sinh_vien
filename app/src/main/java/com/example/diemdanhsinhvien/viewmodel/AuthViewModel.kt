@@ -10,7 +10,6 @@ import com.example.diemdanhsinhvien.data.model.Account
 import com.example.diemdanhsinhvien.data.request.ChangePasswordRequest
 import com.example.diemdanhsinhvien.data.request.LoginRequest
 import com.example.diemdanhsinhvien.data.request.RegisterRequest
-import com.example.diemdanhsinhvien.data.request.UpdateAccountRequest
 import com.example.diemdanhsinhvien.data.response.ApiLoginResponse
 import com.example.diemdanhsinhvien.data.response.LoginResponse
 import com.example.diemdanhsinhvien.repository.AccountRepository
@@ -54,6 +53,17 @@ class AuthViewModel(private val accountRepository: AccountRepository) : ViewMode
         }
     }
 
+    // Chức năng lấy thông tin tài khoản theo ID
+    private val _accountById = MutableLiveData<UiState<Account>>()
+    val accountById: LiveData<UiState<Account>> = _accountById
+
+    fun getAccountById(id: Int) {
+        viewModelScope.launch {
+            accountRepository.getAccountById(id).collect { state ->
+                _accountById.postValue(state)
+            }
+        }
+    }
     private val _updateState = MutableLiveData<UiState<Unit>>()
     val updateState: LiveData<UiState<Unit>> = _updateState
 

@@ -144,6 +144,7 @@
     <string name="absent_count_format">Vắng: %1$d</string>
     <string name="late_count_format">Đi muộn: %1$d</string>
     <string name="attendance_rate_format">Tỷ lệ chuyên cần: %1$s</string>
+    <string name="export_report">Xuất báo cáo</string>
 
     <!-- Màn hình tài khoản -->
     <string name="logout_button">Đăng xuất</string>

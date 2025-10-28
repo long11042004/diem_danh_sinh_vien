@@ -65,6 +65,7 @@ class StudentListActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_CLASS_ID = "extra_class_id"
+        const val EXTRA_HIDE_ATTENDANCE_BUTTON = "extra_hide_attendance_button"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +73,7 @@ class StudentListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_student_list)
 
         classId = intent.getIntExtra(EXTRA_CLASS_ID, -1)
+        val hideAttendanceButton = intent.getBooleanExtra(EXTRA_HIDE_ATTENDANCE_BUTTON, false)
 
         titleTextView = findViewById(R.id.studentListTitle)
         recyclerView = findViewById(R.id.recyclerViewStudents)
@@ -88,6 +90,8 @@ class StudentListActivity : AppCompatActivity() {
             semesterTextViewInCard = cardView.findViewById(R.id.textViewSemester)
             studentCountTextViewInCard = cardView.findViewById(R.id.textViewStudentCount)
             attendanceButton = cardView.findViewById(R.id.buttonStartAttendance)
+
+            cardView.findViewById<Button>(R.id.buttonExportReport).visibility = View.GONE
         } ?: run {
             Log.e("StudentListActivity", "classDetailsCard (include layout) not found in activity_student_list.xml. Class details will not be displayed.")
         }
@@ -104,6 +108,10 @@ class StudentListActivity : AppCompatActivity() {
 
         sortButton.setOnClickListener {
             showSortDialog()
+        }
+
+        if (::attendanceButton.isInitialized) {
+            attendanceButton.visibility = if (hideAttendanceButton) View.GONE else View.VISIBLE
         }
 
         if (::attendanceButton.isInitialized) {

@@ -144,7 +144,6 @@ class AccountFragment : Fragment() {
                 }
                 override fun onError(exception: MsalException) {
                     Log.e("AccountFragment", "MSAL sign out error: $exception")
-
                     navigateToLogin()
                 }
             })

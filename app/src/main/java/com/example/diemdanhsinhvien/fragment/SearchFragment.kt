@@ -2,6 +2,7 @@ package com.example.diemdanhsinhvien.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,10 @@ import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.diemdanhsinhvien.activity.LecturerDetailActivity
 import com.example.diemdanhsinhvien.R
+import com.example.diemdanhsinhvien.activity.StudentListActivity
+import com.example.diemdanhsinhvien.activity.StudentDetailActivity
 import com.example.diemdanhsinhvien.adapter.SearchAdapter
 import com.example.diemdanhsinhvien.data.search.SearchResult
 import com.example.diemdanhsinhvien.data.search.SearchCategory
@@ -83,13 +87,23 @@ class SearchFragment : Fragment() {
         searchAdapter = SearchAdapter { searchResult ->
             when (searchResult) {
                 is SearchResult.StudentResult -> {
-                    // TODO: Chuyển đến màn hình chi tiết sinh viên với searchResult.student.id
+                    val intent = Intent(requireActivity(), StudentDetailActivity::class.java).apply {
+                        putExtra(StudentDetailActivity.EXTRA_STUDENT_DB_ID, searchResult.student.id)
+                    }
+                    startActivity(intent)
                 }
                 is SearchResult.ClassResult -> {
-                    // TODO: Chuyển đến màn hình chi tiết lớp học với searchResult.classItem.id
+                    val intent = Intent(requireActivity(), StudentListActivity::class.java).apply {
+                        putExtra(StudentListActivity.EXTRA_CLASS_ID, searchResult.classItem.id)
+                        putExtra(StudentListActivity.EXTRA_HIDE_ATTENDANCE_BUTTON, true)
+                    }
+                    startActivity(intent)
                 }
                 is SearchResult.LecturerResult -> {
-                    // TODO: Chuyển đến màn hình chi tiết giảng viên với searchResult.lecturer.id
+                    val intent = Intent(requireActivity(), LecturerDetailActivity::class.java).apply {
+                        putExtra(LecturerDetailActivity.EXTRA_LECTURER_ID, searchResult.lecturer.id)
+                    }
+                    startActivity(intent)
                 }
             }
         }

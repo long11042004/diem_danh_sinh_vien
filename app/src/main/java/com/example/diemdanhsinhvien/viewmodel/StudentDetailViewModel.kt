@@ -5,10 +5,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.data.model.Student
 import androidx.lifecycle.viewModelScope
-import com.example.diemdanhsinhvien.data.relations.StudentAttendanceHistory
+import com.example.diemdanhsinhvien.common.HistoryUiState
 import com.example.diemdanhsinhvien.repository.StudentRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class StudentDetailViewModel(
@@ -24,12 +25,26 @@ class StudentDetailViewModel(
                 initialValue = UiState.Loading
             )
 
-    val attendanceHistory: StateFlow<UiState<List<StudentAttendanceHistory>>> =
+    val attendanceHistory: StateFlow<HistoryUiState> =
         studentRepository.getAttendanceHistory(studentId)
+            .map { state ->
+                when (state) {
+                    is UiState.Loading -> HistoryUiState.Loading
+                    is UiState.Success -> HistoryUiState.Success(state.data)
+                    is UiState.Error -> {
+                        if (state.message.contains("404") || state.message.contains("403")) {
+                            HistoryUiState.Hidden
+                        } else {
+                            HistoryUiState.Error(state.message)
+                        }
+                    }
+                    else -> HistoryUiState.Loading
+                }
+            }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
-                initialValue = UiState.Loading
+                initialValue = HistoryUiState.Loading
             )
 }
 

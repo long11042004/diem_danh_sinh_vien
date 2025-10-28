@@ -14,6 +14,10 @@ import kotlinx.coroutines.launch
 
 class SearchViewModel(private val searchRepository: SearchRepository) : ViewModel() {
 
+    companion object {
+        private const val SEARCH_DEBOUNCE_DELAY = 300L
+    }
+
     private val _searchResults = MutableLiveData<List<SearchResult>>()
     val searchResults: LiveData<List<SearchResult>> = _searchResults
 
@@ -38,7 +42,7 @@ class SearchViewModel(private val searchRepository: SearchRepository) : ViewMode
             _isLoading.value = true
             _noResults.value = false // Reset cờ không có kết quả
 
-            delay(300)
+            delay(SEARCH_DEBOUNCE_DELAY)
 
             val results: List<SearchResult> = when (category) {
                 SearchCategory.STUDENTS -> {

@@ -70,8 +70,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:visibility="gone"
             android:text="@string/start_attendance"
             app:icon="@drawable/ic_checklist" />
+
+        <Button
+            android:id="@+id/buttonExportReport"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            android:text="@string/export_report"
+            app:icon="@drawable/ic_export" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

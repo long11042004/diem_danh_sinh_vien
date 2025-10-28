@@ -1,6 +1,7 @@
 package com.example.diemdanhsinhvien.activity
 
 import android.os.Bundle
+import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -15,10 +16,12 @@ import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.adapter.ClassReportDetailAdapter
 import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.network.apiservice.APIClient
+import com.example.diemdanhsinhvien.repository.ClassRepository
 import com.example.diemdanhsinhvien.repository.ReportRepository
 import com.example.diemdanhsinhvien.viewmodel.ClassReportDetailViewModel
 import com.example.diemdanhsinhvien.viewmodel.ClassReportDetailViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
 
 class ClassReportDetailActivity : AppCompatActivity() {
@@ -26,12 +29,21 @@ class ClassReportDetailActivity : AppCompatActivity() {
     private var classId: Int = -1
     private var className: String? = null
 
+    private lateinit var courseNameTextView: TextView
+    private lateinit var classCodeTextView: TextView
+    private lateinit var courseIdTextView: TextView
+    private lateinit var semesterTextView: TextView
+    private lateinit var studentCountTextView: TextView
+
     private val viewModel: ClassReportDetailViewModel by viewModels {
         ClassReportDetailViewModelFactory(
             ReportRepository(
                 attendanceApi = APIClient.attendanceApi(applicationContext),
                 courseApi = APIClient.courseApi(applicationContext),
                 studentApi = APIClient.studentApi(applicationContext),
+            ),
+            ClassRepository(
+                courseApi = APIClient.courseApi(applicationContext)
             ),
             classId
         )
@@ -69,23 +81,56 @@ class ClassReportDetailActivity : AppCompatActivity() {
         val progressBar = findViewById<ProgressBar>(R.id.progressBarReportDetail)
         val noDetailsTextView = findViewById<TextView>(R.id.textViewNoDetails)
         val adapter = ClassReportDetailAdapter()
+        val classDetailsCard = findViewById<View>(R.id.classDetailsCard)
+
+        // Khởi tạo các TextView trong card thông tin lớp học
+        courseNameTextView = classDetailsCard.findViewById(R.id.textViewCourseName)
+        classCodeTextView = classDetailsCard.findViewById(R.id.textViewClassCode)
+        courseIdTextView = classDetailsCard.findViewById(R.id.textViewCourseId)
+        semesterTextView = classDetailsCard.findViewById(R.id.textViewSemester)
+        studentCountTextView = classDetailsCard.findViewById(R.id.textViewStudentCount)
+
+        val buttonStartAttendance = classDetailsCard.findViewById<MaterialButton>(R.id.buttonStartAttendance)
+        val buttonExportReport = classDetailsCard.findViewById<MaterialButton>(R.id.buttonExportReport)
+
+        buttonStartAttendance.visibility = View.GONE
+        buttonExportReport.visibility = View.VISIBLE
+
+        buttonExportReport.setOnClickListener {
+            Toast.makeText(this, "Chức năng xuất báo cáo đang được phát triển", Toast.LENGTH_SHORT).show()
+        }
 
         recyclerView.adapter = adapter
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.reportDetails.collect { state ->
-                    progressBar.isVisible = state is UiState.Loading
-                    recyclerView.isVisible = state is UiState.Success && state.data.isNotEmpty()
-                    noDetailsTextView.isVisible = state is UiState.Success && state.data.isEmpty()
+                launch {
+                    viewModel.reportDetails.collect { state ->
+                        progressBar.isVisible = state is UiState.Loading
+                        recyclerView.isVisible = state is UiState.Success && state.data.isNotEmpty()
+                        noDetailsTextView.isVisible = state is UiState.Success && state.data.isEmpty()
 
-                    when (state) {
-                        is UiState.Success -> adapter.submitList(state.data)
-                        is UiState.Error -> {
-                            noDetailsTextView.isVisible = true
-                            noDetailsTextView.text = state.message
+                        when (state) {
+                            is UiState.Success -> adapter.submitList(state.data)
+                            is UiState.Error -> {
+                                noDetailsTextView.isVisible = true
+                                noDetailsTextView.text = state.message
+                            }
+                            else -> { /* Do nothing for Loading or Empty */ }
                         }
-                        else -> { /* Do nothing for Loading or Empty */ }
+                    }
+                }
+
+                launch {
+                    viewModel.classDetails.collect { classDetails ->
+                        classDetails?.let {
+                            courseNameTextView.text = it.courseName
+                            classCodeTextView.text = getString(R.string.class_code_label, it.classCode)
+                            courseIdTextView.text = getString(R.string.course_id_label, it.courseId)
+                            semesterTextView.text = getString(R.string.semester_label, it.semester)
+
+                            studentCountTextView.visibility = View.GONE
+                        }
                     }
                 }
             }
