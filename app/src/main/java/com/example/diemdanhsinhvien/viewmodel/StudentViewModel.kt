@@ -30,18 +30,23 @@ class StudentViewModel(
 ) : ViewModel() {
     private val _sortOrder = MutableStateFlow(SortOrder.BY_NAME)
     private val _searchQuery = MutableStateFlow("")
+    private val _refreshClassDetailsTrigger = MutableStateFlow(0)
 
     private val studentsFromRepo: Flow<List<Student>> = _sortOrder
         .flatMapLatest { sortOrder ->
             studentRepository.getStudentsForClass(classId, sortOrder)
         }
 
-    val classDetails: StateFlow<Course?> = classRepository.getClassById(classId)
+    val classDetails: StateFlow<Course?> = _refreshClassDetailsTrigger
+        .flatMapLatest {
+            // Luồng này sẽ thực thi lại việc lấy dữ liệu mỗi khi giá trị trigger thay đổi
+            classRepository.getClassById(classId)
+        }
         .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null
-        )
+             scope = viewModelScope,
+             started = SharingStarted.WhileSubscribed(5000),
+             initialValue = null
+         )
 
     val totalStudentCount: StateFlow<Int> = studentsFromRepo
         .map { it.size }
@@ -99,6 +104,14 @@ class StudentViewModel(
     // Hàm để cập nhật chuỗi tìm kiếm từ UI
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
+    }
+
+    fun saveMsFormUrl(url: String) {
+        viewModelScope.launch {
+            classRepository.updateMsFormUrl(classId, url)
+            // Sau khi gọi API, thay đổi giá trị của trigger để kích hoạt việc làm mới
+            _refreshClassDetailsTrigger.value++
+        }
     }
 }
 

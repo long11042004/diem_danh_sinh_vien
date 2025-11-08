@@ -6,5 +6,6 @@ data class Class(
     val classCode: String,     // Mã lớp
     val courseId: String,    // Mã học phần
     val semester: String,     // Kì học
-    val scheduleInfo: String  // Lịch học
+    val scheduleInfo: String,  // Lịch học
+    val msFormUrl: String? = null
 )

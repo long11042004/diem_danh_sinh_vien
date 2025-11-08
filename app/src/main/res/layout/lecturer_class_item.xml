@@ -84,5 +84,14 @@
             android:text="@string/export_report"
             app:icon="@drawable/ic_export" />
 
+         <Button
+            android:id="@+id/buttonStartQRAttendance"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Điểm danh bằng QR"
+            app:icon="@drawable/ic_qr_code" />
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

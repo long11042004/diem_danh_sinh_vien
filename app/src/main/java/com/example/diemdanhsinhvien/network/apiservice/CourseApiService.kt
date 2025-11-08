@@ -1,5 +1,6 @@
 package com.example.diemdanhsinhvien.network.apiservice
 
+import com.example.diemdanhsinhvien.data.request.UpdateFormUrlRequest
 import com.example.diemdanhsinhvien.data.relations.ClassWithStudentCount
 import com.example.diemdanhsinhvien.data.model.Class
 import retrofit2.Response
@@ -37,6 +38,12 @@ interface CourseApiService {
         @Path("id") classId: Int,
         @Body classData: Class
     ): Response<Class>
+
+    @PUT("classes/qr/{id}")
+    suspend fun updateMsFormUrl(
+        @Path("id") classId: Int,
+        @Body body: UpdateFormUrlRequest
+    ): Response<Unit>
 
     @DELETE("courses/{id}")
     suspend fun deleteClass(

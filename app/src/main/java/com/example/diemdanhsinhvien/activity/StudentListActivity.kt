@@ -3,9 +3,6 @@ package com.example.diemdanhsinhvien.activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.graphics.Canvas
-import android.graphics.drawable.ColorDrawable
-import androidx.core.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -14,6 +11,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +19,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import android.graphics.Canvas
+import android.graphics.drawable.ColorDrawable
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.adapter.StudentAdapter
 import com.example.diemdanhsinhvien.network.apiservice.APIClient
@@ -29,10 +29,11 @@ import com.example.diemdanhsinhvien.repository.StudentRepository
 import com.example.diemdanhsinhvien.viewmodel.SortOrder
 import com.example.diemdanhsinhvien.viewmodel.StudentViewModel
 import com.example.diemdanhsinhvien.viewmodel.StudentViewModelFactory
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
+import androidx.core.graphics.drawable.toDrawable
 
 class StudentListActivity : AppCompatActivity() {
 
@@ -44,6 +45,7 @@ class StudentListActivity : AppCompatActivity() {
     private lateinit var semesterTextViewInCard: TextView
     private lateinit var studentCountTextViewInCard: TextView
     private lateinit var recyclerView: RecyclerView
+    private lateinit var qrAttendanceButton: Button
     private lateinit var emptyTextView: TextView
     private lateinit var attendanceButton: Button
     private lateinit var sortButton: View
@@ -89,6 +91,7 @@ class StudentListActivity : AppCompatActivity() {
             courseIdTextViewInCard = cardView.findViewById(R.id.textViewCourseId)
             semesterTextViewInCard = cardView.findViewById(R.id.textViewSemester)
             studentCountTextViewInCard = cardView.findViewById(R.id.textViewStudentCount)
+            qrAttendanceButton = cardView.findViewById(R.id.buttonStartQRAttendance)
             attendanceButton = cardView.findViewById(R.id.buttonStartAttendance)
 
             cardView.findViewById<Button>(R.id.buttonExportReport).visibility = View.GONE
@@ -120,6 +123,16 @@ class StudentListActivity : AppCompatActivity() {
                 intent.putExtra(AttendanceActivity.EXTRA_CLASS_ID, classId)
                 intent.putExtra(AttendanceActivity.EXTRA_CLASS_NAME, studentViewModel.classDetails.value?.courseName)
                 intent.putExtra(AttendanceActivity.EXTRA_CLASS_CODE, studentViewModel.classDetails.value?.classCode)
+                startActivity(intent)
+            }
+        }
+
+        if (::qrAttendanceButton.isInitialized) {
+            qrAttendanceButton.setOnClickListener {
+                val courseName = studentViewModel.classDetails.value?.courseName
+                val intent = Intent(this, QRDisplayActivity::class.java).apply {
+                    putExtra("COURSE_NAME", courseName)
+                }
                 startActivity(intent)
             }
         }
@@ -268,7 +281,7 @@ class StudentListActivity : AppCompatActivity() {
 
     private fun setupSwipeToDelete(recyclerView: RecyclerView, adapter: StudentAdapter) {
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(
-            0, // không hỗ trợ kéo-thả (drag)
+            0,
             ItemTouchHelper.LEFT
         ) {
             override fun onMove( 
@@ -302,7 +315,8 @@ class StudentListActivity : AppCompatActivity() {
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
 
                 val itemView = viewHolder.itemView
-                val background = ColorDrawable(ContextCompat.getColor(this@StudentListActivity, R.color.dark_red))
+                val background =
+                    ContextCompat.getColor(this@StudentListActivity, R.color.dark_red).toDrawable()
                 val deleteIcon = ContextCompat.getDrawable(this@StudentListActivity, R.drawable.ic_delete)
 
                 if (dX < 0) { // Chỉ vẽ khi trượt sang trái

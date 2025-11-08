@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.diemdanhsinhvien.data.model.Class
 import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.data.relations.ClassWithStudentCount
+import com.example.diemdanhsinhvien.data.request.UpdateFormUrlRequest
 import com.example.diemdanhsinhvien.network.apiservice.CourseApiService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -52,4 +53,14 @@ class ClassRepository(private val courseApi: CourseApiService) {
             emit(UiState.Error("Lỗi kết nối: ${e.message}"))
         }
     }.flowOn(Dispatchers.IO)
+
+    suspend fun updateMsFormUrl(classId: Int, url: String): Boolean {
+        return try {
+            val response = courseApi.updateMsFormUrl(classId, UpdateFormUrlRequest(msFormUrl = url))
+            response.isSuccessful
+        } catch (e: Exception) {
+            Log.e("ClassRepository", "Error updating MS Form URL: ${e.message}")
+            false
+        }
+    }
 }
