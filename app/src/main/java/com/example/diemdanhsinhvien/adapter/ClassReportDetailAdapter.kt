@@ -29,13 +29,23 @@ class ClassReportDetailAdapter : ListAdapter<ClassReportDetail, ClassReportDetai
         private val presentCountTextView: TextView = itemView.findViewById(R.id.textViewPresentCount)
         private val absentCountTextView: TextView = itemView.findViewById(R.id.textViewAbsentCount)
         private val lateCountTextView: TextView = itemView.findViewById(R.id.textViewLateCount)
-        private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+        // Định dạng để đọc chuỗi ngày tháng từ API
+        private val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        // Định dạng để hiển thị ngày tháng trên giao diện
+        private val displayFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
         fun bind(reportDetail: ClassReportDetail) {
             val context = itemView.context
 
-            val date = Date(reportDetail.sessionDate)
-            sessionDateTextView.text = context.getString(R.string.session_date_format, dateFormat.format(date))
+            val formattedDate = try {
+                isoFormat.parse(reportDetail.sessionDate)?.let { date ->
+                    displayFormat.format(date)
+                } ?: reportDetail.sessionDate // Dùng giá trị gốc nếu parse trả về null
+            } catch (e: Exception) {
+                reportDetail.sessionDate // Dùng giá trị gốc nếu có lỗi parse
+            }
+            sessionDateTextView.text = context.getString(R.string.session_date_format, formattedDate)
 
             presentCountTextView.text = context.getString(R.string.present_count_format, reportDetail.presentCount.toIntOrNull() ?: 0)
             absentCountTextView.text = context.getString(R.string.absent_count_format, reportDetail.absentCount.toIntOrNull() ?: 0)

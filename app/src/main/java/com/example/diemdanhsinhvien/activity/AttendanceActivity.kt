@@ -20,6 +20,8 @@ import com.example.diemdanhsinhvien.repository.StudentRepository
 import com.example.diemdanhsinhvien.repository.NotificationRepository
 import com.example.diemdanhsinhvien.viewmodel.AttendanceViewModel
 import com.example.diemdanhsinhvien.viewmodel.AttendanceViewModelFactory
+import com.example.diemdanhsinhvien.viewmodel.NotificationViewModel
+import com.example.diemdanhsinhvien.viewmodel.NotificationViewModelFactory
 import com.example.diemdanhsinhvien.viewmodel.StudentViewModel
 import com.example.diemdanhsinhvien.viewmodel.StudentViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
@@ -51,6 +53,14 @@ class AttendanceActivity : AppCompatActivity() {
         AttendanceViewModelFactory(
             AttendanceRepository(
                 attendanceApi = APIClient.attendanceApi(applicationContext)
+            )
+        )
+    }
+
+    private val notificationViewModel: NotificationViewModel by viewModels {
+        NotificationViewModelFactory(
+            repository = NotificationRepository(
+                notificationApiService = APIClient.notificationApi(applicationContext)
             )
         )
     }
@@ -88,7 +98,7 @@ class AttendanceActivity : AppCompatActivity() {
                 isRead = false
             )
 
-            NotificationRepository.addNotification(newNotification)
+            notificationViewModel.createNotification(newNotification)
 
             Toast.makeText(this, getString(R.string.attendance_saved_successfully), Toast.LENGTH_SHORT).show()
             finish()

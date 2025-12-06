@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.Toast
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.adapter.NotificationAdapter
 import com.example.diemdanhsinhvien.common.UiState
+import com.example.diemdanhsinhvien.network.apiservice.APIClient
 import com.example.diemdanhsinhvien.repository.NotificationRepository
 import com.example.diemdanhsinhvien.viewmodel.NotificationViewModel
 import com.example.diemdanhsinhvien.viewmodel.NotificationViewModelFactory
@@ -24,7 +26,12 @@ import kotlinx.coroutines.launch
 class NotificationsFragment : Fragment() {
 
     private val viewModel: NotificationViewModel by viewModels {
-        NotificationViewModelFactory(NotificationRepository())
+        NotificationViewModelFactory(
+            NotificationRepository(
+                // Cung cấp NotificationApiService được tạo từ APIClient
+                notificationApiService = APIClient.notificationApi(requireContext().applicationContext)
+            )
+        )
     }
 
     override fun onCreateView(
@@ -49,12 +56,27 @@ class NotificationsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.notifications.collect { state ->
-                    progressBar.isVisible = state is UiState.Loading
-                    recyclerView.isVisible = state is UiState.Success && state.data.isNotEmpty()
-                    noNotificationsTextView.isVisible = state is UiState.Success && state.data.isEmpty()
-
-                    if (state is UiState.Success) {
-                        adapter.submitList(state.data)
+                    when (state) {
+                        is UiState.Loading -> {
+                            progressBar.isVisible = true
+                            recyclerView.isVisible = false
+                            noNotificationsTextView.isVisible = false
+                        }
+                        is UiState.Success -> {
+                            progressBar.isVisible = false
+                            recyclerView.isVisible = true
+                            noNotificationsTextView.isVisible = false
+                            adapter.submitList(state.data)
+                        }
+                        is UiState.Empty -> {
+                            progressBar.isVisible = false
+                            recyclerView.isVisible = false
+                            noNotificationsTextView.isVisible = true
+                        }
+                        is UiState.Error -> {
+                            progressBar.isVisible = false
+                            Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
             }

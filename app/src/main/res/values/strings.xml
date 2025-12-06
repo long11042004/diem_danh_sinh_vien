@@ -117,13 +117,18 @@
     <string name="search_category_lecturers">Giảng viên</string>
     <string name="search_results_list_description">Danh sách kết quả tìm kiếm</string>
 
-    <!-- Màn hình điểm danh -->
+    <!-- Màn hình điểm danh thông thường-->
     <string name="attendance_screen_title">Điểm danh</string>
     <string name="save_attendance">Lưu điểm danh</string>
     <string name="status_present">Có mặt</string>
     <string name="status_absent">Vắng</string>
     <string name="status_late">Đi muộn</string>
     <string name="attendance_saved_successfully">Đã lưu điểm danh thành công!</string>
+
+    <!-- Màn hình điểm danh bằng QR -->
+    <string name="qr_time_left">Thời gian còn lại: %02d:%02d</string>
+    <string name="qr_time_up">Đã hết giờ</string>
+    <string name="qr_time_up_message">Đã hết giờ điểm danh</string>
 
     <!-- Màn hình chi tiết sinh viên -->
     <string name="student_detail_title">Chi tiết sinh viên</string>
@@ -144,7 +149,7 @@
     <string name="absent_count_format">Vắng: %1$d</string>
     <string name="late_count_format">Đi muộn: %1$d</string>
     <string name="attendance_rate_format">Tỷ lệ chuyên cần: %1$s</string>
-    <string name="export_report">Xuất báo cáo</string>
+    <string name="export_report">Xuất file Excel</string>
 
     <!-- Màn hình tài khoản -->
     <string name="logout_button">Đăng xuất</string>

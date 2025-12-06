@@ -130,8 +130,10 @@ class StudentListActivity : AppCompatActivity() {
         if (::qrAttendanceButton.isInitialized) {
             qrAttendanceButton.setOnClickListener {
                 val courseName = studentViewModel.classDetails.value?.courseName
+                // Chuyển classId sang QRDisplayActivity
                 val intent = Intent(this, QRDisplayActivity::class.java).apply {
                     putExtra("COURSE_NAME", courseName)
+                    putExtra("CLASS_ID", classId)
                 }
                 startActivity(intent)
             }

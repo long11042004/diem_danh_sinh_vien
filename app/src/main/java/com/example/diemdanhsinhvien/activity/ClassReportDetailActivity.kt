@@ -1,10 +1,12 @@
 package com.example.diemdanhsinhvien.activity
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -14,6 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.example.diemdanhsinhvien.R
 import com.example.diemdanhsinhvien.adapter.ClassReportDetailAdapter
+import com.example.diemdanhsinhvien.data.model.ClassReportDetail
 import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.network.apiservice.APIClient
 import com.example.diemdanhsinhvien.repository.ClassRepository
@@ -22,6 +25,10 @@ import com.example.diemdanhsinhvien.viewmodel.ClassReportDetailViewModel
 import com.example.diemdanhsinhvien.viewmodel.ClassReportDetailViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlinx.coroutines.launch
 
 class ClassReportDetailActivity : AppCompatActivity() {
@@ -34,6 +41,17 @@ class ClassReportDetailActivity : AppCompatActivity() {
     private lateinit var courseIdTextView: TextView
     private lateinit var semesterTextView: TextView
     private lateinit var studentCountTextView: TextView
+
+    private val createFileLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri ->
+        uri?.let {
+            val currentState = viewModel.reportDetails.value
+            if (currentState is UiState.Success) {
+                val reportData = currentState.data
+                val csvContent = generateCsvContent(reportData)
+                writeCsvToFile(it, csvContent)
+            }
+        }
+    }
 
     private val viewModel: ClassReportDetailViewModel by viewModels {
         ClassReportDetailViewModelFactory(
@@ -93,11 +111,20 @@ class ClassReportDetailActivity : AppCompatActivity() {
         val buttonStartAttendance = classDetailsCard.findViewById<MaterialButton>(R.id.buttonStartAttendance)
         val buttonExportReport = classDetailsCard.findViewById<MaterialButton>(R.id.buttonExportReport)
 
+        val qrAttendanceButton = classDetailsCard.findViewById<MaterialButton>(R.id.buttonStartQRAttendance)
         buttonStartAttendance.visibility = View.GONE
         buttonExportReport.visibility = View.VISIBLE
-
+        qrAttendanceButton.visibility = View.GONE // Ẩn nút Điểm danh bằng QR
+        
         buttonExportReport.setOnClickListener {
-            Toast.makeText(this, "Chức năng xuất báo cáo đang được phát triển", Toast.LENGTH_SHORT).show()
+            val currentState = viewModel.reportDetails.value
+            if (currentState is UiState.Success && currentState.data.isNotEmpty()) {
+                // Tạo tên tệp từ tên lớp học, thay thế các ký tự không hợp lệ
+                val safeClassName = className?.replace(Regex("[^a-zA-Z0-9_]"), "_") ?: "lop_hoc"
+                createFileLauncher.launch("Bao_cao_diem_danh_$safeClassName.csv")
+            } else {
+                Toast.makeText(this, "Không có dữ liệu để xuất báo cáo.", Toast.LENGTH_SHORT).show()
+            }
         }
 
         recyclerView.adapter = adapter
@@ -128,12 +155,56 @@ class ClassReportDetailActivity : AppCompatActivity() {
                             classCodeTextView.text = getString(R.string.class_code_label, it.classCode)
                             courseIdTextView.text = getString(R.string.course_id_label, it.courseId)
                             semesterTextView.text = getString(R.string.semester_label, it.semester)
-
-                            studentCountTextView.visibility = View.GONE
                         }
                     }
                 }
             }
+        }
+    }
+
+    private fun generateCsvContent(data: List<ClassReportDetail>): String {
+        val stringBuilder = StringBuilder()
+
+        // Thêm thông tin chi tiết của lớp học vào đầu tệp CSV
+        // Đặt giá trị trong dấu ngoặc kép để xử lý trường hợp chứa dấu phẩy
+        stringBuilder.append("Tên môn học:,\"${courseNameTextView.text}\"\n")
+        stringBuilder.append("\"${classCodeTextView.text}\"\n")
+        stringBuilder.append("\"${courseIdTextView.text}\"\n")
+        stringBuilder.append("\"${semesterTextView.text}\"\n\n")
+
+        // Thêm phần đầu của bảng dữ liệu
+        val header = "Ngày,Có mặt,Vắng,Trễ\n"
+        stringBuilder.append(header)
+
+        // Thêm các hàng dữ liệu điểm danh theo từng buổi
+        val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        val displayFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        data.forEach { detail ->
+            val dateString = try {
+                isoFormat.parse(detail.sessionDate)?.let { date ->
+                    displayFormat.format(date)
+                } ?: detail.sessionDate // Dùng giá trị gốc nếu parse trả về null
+            } catch (e: Exception) {
+                e.printStackTrace()
+                detail.sessionDate // Dùng giá trị gốc nếu có lỗi parse
+            }
+            stringBuilder.append("$dateString,${detail.presentCount},${detail.absentCount},${detail.lateCount}\n")
+        }
+        return stringBuilder.toString()
+    }
+
+    private fun writeCsvToFile(uri: Uri, content: String) {
+        try {
+            // Sử dụng UTF-8 with BOM để Excel mở file tiếng Việt có dấu đúng cách
+            val bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())
+            contentResolver.openOutputStream(uri)?.use { outputStream ->
+                outputStream.write(bom)
+                outputStream.write(content.toByteArray(Charsets.UTF_8))
+            }
+            Toast.makeText(this, "Xuất báo cáo thành công!", Toast.LENGTH_SHORT).show()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Toast.makeText(this, "Lỗi khi lưu tệp báo cáo.", Toast.LENGTH_SHORT).show()
         }
     }
 }

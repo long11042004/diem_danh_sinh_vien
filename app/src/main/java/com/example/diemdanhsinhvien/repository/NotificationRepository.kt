@@ -1,41 +1,58 @@
 package com.example.diemdanhsinhvien.repository
 
-import android.util.Log
 import com.example.diemdanhsinhvien.common.UiState
 import com.example.diemdanhsinhvien.data.model.Notification
+import com.example.diemdanhsinhvien.network.apiservice.NotificationApiService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 
-class NotificationRepository {
+class NotificationRepository (
+    private val notificationApiService: NotificationApiService
+) {
 
-    companion object {
-        private val mockNotifications = mutableListOf<Notification>()
+    fun getNotifications(): Flow<UiState<List<Notification>>> = flow {
+        emit(UiState.Loading)
+        try {
+            val response = notificationApiService.getNotifications()
+            if (response.isSuccessful) {
+                val notifications = response.body()
+                if (notifications.isNullOrEmpty()) {
+                    emit(UiState.Empty)
+                } else {
+                    emit(UiState.Success(notifications))
+                }
+            } else {
+                emit(UiState.Error("API Error: ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            emit(UiState.Error(e.message ?: "An unknown error occurred"))
+        }
+    }.flowOn(Dispatchers.IO)
 
-        private val _notificationsFlow = MutableStateFlow(mockNotifications.toList())
-
-        fun addNotification(notification: Notification) {
-            mockNotifications.add(0, notification)
-            _notificationsFlow.value = mockNotifications.toList()
+    suspend fun markNotificationAsRead(notificationId: String): UiState<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val response = notificationApiService.markAsRead(notificationId)
+            if (response.isSuccessful) UiState.Success(Unit) else UiState.Error("API Error: ${response.message()}")
+        } catch (e: Exception) {
+            UiState.Error(e.message ?: "An unknown error occurred")
         }
     }
 
-    fun markNotificationAsRead(notification: Notification) {
-        val index = mockNotifications.indexOfFirst { it.id == notification.id }
-        if (index != -1) {
-            val updatedNotification = notification.copyWith(isRead = true)
-            mockNotifications[index] = updatedNotification
-            _notificationsFlow.value = mockNotifications.toList()
-            Log.d("NotificationRepository", "Notification ${notification.id} marked as read")
-        } else {
-            Log.d("NotificationRepository", "Notification ${notification.id} not found")
-        }
-    }
-
-    fun getNotifications(): Flow<UiState<List<Notification>>> {
-        return _notificationsFlow.asStateFlow().map { list ->
-            UiState.Success(list.sortedByDescending { it.timestamp })
+    suspend fun createNotification(notification: Notification): UiState<Notification> = withContext(Dispatchers.IO) {
+        try {
+            val response = notificationApiService.createNotification(notification)
+            if (response.isSuccessful) {
+                response.body()?.let { createdNotification ->
+                    UiState.Success(createdNotification)
+                } ?: UiState.Error("Response body is null after creation")
+            } else {
+                UiState.Error("API Error: ${response.message()}")
+            }
+        } catch (e: Exception) {
+            UiState.Error(e.message ?: "An unknown error occurred")
         }
     }
 }

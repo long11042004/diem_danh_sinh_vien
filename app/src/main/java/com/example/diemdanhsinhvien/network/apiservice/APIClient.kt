@@ -63,6 +63,8 @@ object APIClient {
         StudentApiService::class.java)
     fun attendanceApi(context: Context): AttendanceApiService = getRetrofit(context).create(
         AttendanceApiService::class.java)
+    fun notificationApi(context: Context): NotificationApiService = getRetrofit(context).create(
+        NotificationApiService::class.java)
 
     fun searchApi(context: Context): SearchApiService = getRetrofit(context).create(SearchApiService::class.java)
 

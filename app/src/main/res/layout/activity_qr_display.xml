@@ -26,6 +26,18 @@
         tools:text="Lập trình Android Nâng cao" />
 
     <TextView
+        android:id="@+id/textViewTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewCourseNameQR"
+        tools:text="Thời gian còn lại: 05:00" />
+
+    <TextView
         android:id="@+id/textViewInstruction"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -36,7 +48,7 @@
         android:textAppearance="?attr/textAppearanceBody1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewCourseNameQR" />
+        app:layout_constraintTop_toBottomOf="@id/textViewTimer" />
 
     <ImageView
         android:id="@+id/imageViewQRCode"
@@ -47,6 +59,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewInstruction" />
+
+    <TextView
+        android:id="@+id/textViewTimeUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="16dp"
+        android:gravity="center"
+        android:text="@string/qr_time_up_message"
+        android:textAppearance="?attr/textAppearanceHeadline5"
+        android:textColor="?attr/colorError"
+        android:visibility="gone"
+        app:drawableTopCompat="@drawable/ic_timer_off"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewQRCode"
+        app:layout_constraintEnd_toEndOf="@id/imageViewQRCode"
+        app:layout_constraintStart_toStartOf="@id/imageViewQRCode"
+        app:layout_constraintTop_toTopOf="@id/imageViewQRCode" />
 
     <TextView
         android:id="@+id/textViewSessionCodeInstruction"
@@ -73,5 +101,54 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textViewSessionCodeInstruction"
         tools:text="A4B9D1" />
+
+    // <ProgressBar
+        android:id="@+id/loadingView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbarQRDisplay"
+        tools:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/errorView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbarQRDisplay"
+        tools:visibility="visible">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_error"
+            app:tint="?attr/colorError" />
+
+        <TextView
+            android:id="@+id/errorTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:paddingHorizontal="16dp"
+            android:textAppearance="?attr/textAppearanceBody1"
+            tools:text="Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại." />
+
+        <Button
+            android:id="@+id/buttonRetry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Thử lại" />
+    </LinearLayout> //
 
 </androidx.constraintlayout.widget.ConstraintLayout>
